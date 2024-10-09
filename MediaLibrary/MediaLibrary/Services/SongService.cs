@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Services;
 
-internal class SongService : ISongService
+public class SongService : ISongService
 {
-    private readonly RepositoryInMemorySong _repositoryInMemorySong;
-    SongService(RepositoryInMemorySong repositoryInMemorySong)
+    private readonly IRepositoryInMemorySong _repositoryInMemorySong;
+    public SongService(IRepositoryInMemorySong repositoryInMemorySong)
     {
         _repositoryInMemorySong = repositoryInMemorySong;
     }

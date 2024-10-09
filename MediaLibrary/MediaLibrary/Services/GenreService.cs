@@ -9,9 +9,14 @@ using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Services;
 
-internal class GenreService : IGenreService
+public class GenreService : IGenreService
 {
     private readonly IRepositoryInMemoryGenre _repositoryInMemoryGenre;
+
+    public GenreService(IRepositoryInMemoryGenre repositoryInMemoryGenre)
+    {
+        _repositoryInMemoryGenre = repositoryInMemoryGenre;
+    }
 
     public GenreDto GetById(int id)
     {

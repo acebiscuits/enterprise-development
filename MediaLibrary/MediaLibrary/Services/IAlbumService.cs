@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Services;
 
-internal interface IAlbumService
+public interface IAlbumService
 {
     AlbumDto GetById(int id);
     IEnumerable<AlbumDto> GetAll();

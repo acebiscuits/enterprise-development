@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Services;
 
-internal class AlbumService : IAlbumService
+public class AlbumService : IAlbumService
 {
     private readonly IRepositoryInMemoryAlbum _repositoryInMemoryAlbum;
 

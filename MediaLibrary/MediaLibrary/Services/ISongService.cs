@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Services;
 
-internal interface ISongService
+public interface ISongService
 {
     SongDto GetById(int id);
     IEnumerable<SongDto> GetAll();

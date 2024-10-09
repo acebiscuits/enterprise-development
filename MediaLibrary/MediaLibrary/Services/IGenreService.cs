@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Services;
 
-internal interface IGenreService
+public interface IGenreService
 {
     GenreDto GetById(int id);
     IEnumerable<GenreDto> GetAll();
