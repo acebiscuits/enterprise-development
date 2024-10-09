@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Repositories;
 
-internal interface IRepositoryInMemoryAlbum : IRepositoryInMemory<Album>
+public interface IRepositoryInMemoryAlbum : IRepositoryInMemory<Album>
 {
 }

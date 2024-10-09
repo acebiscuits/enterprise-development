@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Repositories;
 
-internal class RepositoryInMemorySong : RepositoryInMemory<Song>, IRepositoryInMemorySong
+public class RepositoryInMemorySong : RepositoryInMemory<Song>, IRepositoryInMemorySong
 {
     public override void Update(Song song)
     {

@@ -10,7 +10,7 @@ namespace MediaLibrary.Domain.Repositories;
 public class RepositoryInMemory<T> : IRepositoryInMemory<T> where T : class, IEntity
 {
     private List<T> _entities = new();
-    private int id;
+    private int _currentId = 0;
 
     public T GetById(int id)
     {
@@ -20,7 +20,8 @@ public class RepositoryInMemory<T> : IRepositoryInMemory<T> where T : class, IEn
     public IEnumerable<T>GetAll() => _entities;
     public void Add(T entity)
     {
-        id += 1;
+        _currentId += 1;
+        entity.Id = _currentId;
         _entities.Add(entity);
     }
 
