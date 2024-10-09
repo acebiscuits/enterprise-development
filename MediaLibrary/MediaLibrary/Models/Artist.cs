@@ -3,13 +3,13 @@
 /// <summary>
 /// List of artists: theyr names, descriptions, albums and genres
 /// </summary>
-public class Artist
+public class Artist : IEntity
 {
     /// <summary>
     /// Unique Id
     /// </summary>
     /// <example>1</example>
-    public required int ArtistId { get; set; }
+    public int Id { get; set; }
     /// <summary>
     /// Artist's Name
     /// </summary>

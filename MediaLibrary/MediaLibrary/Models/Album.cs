@@ -3,13 +3,13 @@
 /// <summary>
 /// List of albums: unique id, artist's Id, album's title, release date, list of song ids
 /// </summary>
-public class Album
+public class Album : IEntity
 {
     /// <summary>
     /// Unique Id
     /// </summary>
     /// <example>1</example>
-    public required int AlbumId { get; set; }
+    public int Id { get; set; }
     /// <summary>
     /// Artist's Id
     /// </summary>

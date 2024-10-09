@@ -3,13 +3,13 @@
 /// <summary>
 /// List of genres: unique id, title, list of artists in this genre
 /// </summary>
-public class Genre
+public class Genre : IEntity
 {
     /// <summary>
     /// Unique Id
     /// </summary>
     /// <example>1</example>
-    public int GenreId { get; set; }
+    public int Id { get; set; }
     /// <summary>
     /// Genre's Title
     /// </summary>

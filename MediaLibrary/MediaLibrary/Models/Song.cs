@@ -3,13 +3,13 @@
 /// <summary>
 /// List of songs: unique id, name, number in album, album's name, duration
 /// </summary>
-public class Song
+public class Song : IEntity
 {
     /// <summary>
     /// Unique Id
     /// </summary>
     /// <example>1</example>
-    public required int SongId { get; set; }
+    public int Id { get; set; }
     /// <summary>
     /// Song's name
     /// </summary>
@@ -29,5 +29,5 @@ public class Song
     /// Song's duration (HHMMSS)
     /// </summary>
     /// <example>(0, 2, 30)</example>
-    public TimeSpan Duration { get; set; }
+    public required TimeSpan Duration { get; set; }
 }
