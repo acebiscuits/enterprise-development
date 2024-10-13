@@ -1,14 +1,16 @@
 ﻿using MediaLibrary.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Repositories;
 
-public class RepositoryInMemoryAlbum : RepositoryInMemory<Album>, IRepositoryInMemoryAlbum
+/// <summary>
+/// In-memory repository for managing Album entities.
+/// Inherits from the generic RepositoryInMemory class.
+/// </summary>
+public class RepositoryInMemoryAlbum : RepositoryInMemory<Album>, IRepositoryAlbum
 {
+    /// <inheritdoc />
+    public RepositoryInMemoryAlbum(List<Album> initData) : base(initData) { }
+    /// <inheritdoc />
     override public void Update(Album album)
     {
         var existingAlbum = GetById(album.Id);
@@ -17,7 +19,7 @@ public class RepositoryInMemoryAlbum : RepositoryInMemory<Album>, IRepositoryInM
             existingAlbum.ArtistId = album.ArtistId;
             existingAlbum.SongIds = album.SongIds;
             existingAlbum.ReleaseDate = album.ReleaseDate;
-            existingAlbum .Title = album.Title;
+            existingAlbum.Title = album.Title;
         }
     }
 }

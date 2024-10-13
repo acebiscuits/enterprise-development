@@ -1,14 +1,16 @@
 ﻿using MediaLibrary.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Repositories;
 
-public class RepositoryInMemorySong : RepositoryInMemory<Song>, IRepositoryInMemorySong
+/// <summary>
+/// In-memory repository for managing Song entities.
+/// Inherits from the generic RepositoryInMemory class.
+/// </summary>
+public class RepositoryInMemorySong : RepositoryInMemory<Song>, IRepositorySong
 {
+    /// <inheritdoc />
+    public RepositoryInMemorySong(List<Song> initData) : base(initData) { }
+    /// <inheritdoc />
     public override void Update(Song song)
     {
         var existingSong = GetById(song.Id);

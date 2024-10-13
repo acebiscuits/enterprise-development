@@ -1,14 +1,16 @@
 ﻿using MediaLibrary.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Repositories;
 
-public class RepositoryInMemoryGenre : RepositoryInMemory<Genre>, IRepositoryInMemoryGenre
+/// <summary>
+/// In-memory repository for managing Genre entities.
+/// Inherits from the generic RepositoryInMemory class.
+/// </summary>
+public class RepositoryInMemoryGenre : RepositoryInMemory<Genre>, IRepositoryGenre
 {
+    /// <inheritdoc />
+    public RepositoryInMemoryGenre(List<Genre> initData) : base(initData) { }
+    /// <inheritdoc />
     public override void Update(Genre genre)
     {
         var existingGenre = GetById(genre.Id);

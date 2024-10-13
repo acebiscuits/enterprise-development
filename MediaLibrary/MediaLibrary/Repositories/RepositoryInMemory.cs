@@ -1,23 +1,42 @@
 ﻿using MediaLibrary.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Repositories;
 
+/// <summary>
+/// Generic in-memory repository implementation for managing entities of type T.
+/// </summary>
+/// <typeparam name="T">The type of the entity being managed, must implement IEntity interface.</typeparam>
 public class RepositoryInMemory<T> : IRepositoryInMemory<T> where T : class, IEntity
 {
+    /// <inheritdoc />
     private List<T> _entities = new();
-    private int _currentId = 0;
 
-    public T GetById(int id)
+    /// <inheritdoc />
+    private int _currentId = 0;
+    /// <summary>
+    /// Initializes a new instance of the class.
+    /// </summary>
+    public RepositoryInMemory()
+    {
+        _entities = [];
+    }
+    /// <summary>
+    /// Initializes a new instance of the class.
+    /// </summary>
+    public RepositoryInMemory(List<T> entities)
+    {
+        _entities = entities;
+    }
+    /// <inheritdoc />
+    public T? GetById(int id)
     {
         return _entities.FirstOrDefault(a => a.Id == id);
     }
 
-    public IEnumerable<T>GetAll() => _entities;
+    /// <inheritdoc />
+    public IEnumerable<T> GetAll() => _entities;
+
+    /// <inheritdoc />
     public void Add(T entity)
     {
         _currentId += 1;
@@ -25,15 +44,18 @@ public class RepositoryInMemory<T> : IRepositoryInMemory<T> where T : class, IEn
         _entities.Add(entity);
     }
 
+    /// <inheritdoc />
     virtual public void Update(T entity)
     {
     }
 
+    /// <inheritdoc />
     public void Delete(int id)
     {
-        if(GetById(id) != null)
+        var entity = GetById(id);
+        if (entity != null)
         {
-            _entities.Remove(GetById(id));
+            _entities.Remove(entity);
         }
     }
 }
