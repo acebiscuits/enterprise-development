@@ -1,19 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MediaLibrary.Domain.Dto;
 
+/// <summary>
+/// DTO for transferring artist data between layers in the media library.
+/// </summary>
 public class ArtistDto
 {
+    /// <summary>
+    /// The unique identifier of the artist.
+    /// </summary>
     [Required]
     public required int Id { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public List<int> AlbumIds { get; set; }
-    public List<int> GenreIds { get; set; }
+
+    /// <summary>
+    /// The name of the artist.
+    /// </summary>
+    [Required]
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// A description of the artist.
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// The list of album IDs associated with the artist.
+    /// </summary>
+    public List<int> AlbumIds { get; set; } = new();
+
+    /// <summary>
+    /// The list of genre IDs associated with the artist.
+    /// </summary>
+    public List<int> GenreIds { get; set; } = new();
 }
-//добавить ?

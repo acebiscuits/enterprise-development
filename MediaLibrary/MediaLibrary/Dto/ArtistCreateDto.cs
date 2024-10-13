@@ -1,18 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MediaLibrary.Domain.Dto;
 
+/// <summary>
+/// DTO for creating a new artist in the media library.
+/// </summary>
 public class ArtistCreateDto
 {
+    /// <summary>
+    /// The name of the artist.
+    /// </summary>
     [Required]
-    public string Name { get; set; }
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// A description of the artist.
+    /// </summary>
     [Required]
-    public string Description { get; set; }
+    public required string Description { get; set; }
+
+    /// <summary>
+    /// The list of album IDs associated with the artist.
+    /// </summary>
     public List<int> AlbumIds { get; set; } = new();
+
+    /// <summary>
+    /// The list of genre IDs associated with the artist.
+    /// </summary>
     public List<int> GenreIds { get; set; } = new();
 }
