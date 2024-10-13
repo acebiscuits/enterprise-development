@@ -1,24 +1,23 @@
 ﻿using MediaLibrary.Domain.Dto;
 using MediaLibrary.Domain.Models;
 using MediaLibrary.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Services;
-
+/// <summary>
+/// Service for managing artist entities. Provides operations for adding, updating, retrieving, and deleting artists.
+/// </summary>
 public class ArtistService : IArtistService
 {
-    private readonly IRepositoryInMemoryArtist _repositoryInMemoryArtist;
+    private readonly IRepositoryArtist _repositoryInMemoryArtist;
 
-    public ArtistService(IRepositoryInMemoryArtist repositoryInMemoryArtist)
+    /// <inheritdoc />
+    public ArtistService(IRepositoryArtist repositoryInMemoryArtist)
     {
         _repositoryInMemoryArtist = repositoryInMemoryArtist;
     }
 
-    public ArtistDto GetById(int id)
+    /// <inheritdoc />
+    public ArtistDto? GetById(int id)
     {
         var artist = _repositoryInMemoryArtist.GetById(id);
         if (artist == null)
@@ -36,6 +35,7 @@ public class ArtistService : IArtistService
         };
     }
 
+    /// <inheritdoc />
     public IEnumerable<ArtistDto> GetAll()
     {
         var artists = _repositoryInMemoryArtist.GetAll();
@@ -49,21 +49,23 @@ public class ArtistService : IArtistService
         });
     }
 
+    /// <inheritdoc />
     public void Add(ArtistCreateDto artist)
     {
-        _repositoryInMemoryArtist.Add(new Artist 
-        { 
-            Name =  artist.Name, 
-            Description = artist.Description, 
-            AlbumIds = artist.AlbumIds, 
-            GenreIds = artist.GenreIds 
+        _repositoryInMemoryArtist.Add(new Artist
+        {
+            Name = artist.Name,
+            Description = artist.Description,
+            AlbumIds = artist.AlbumIds,
+            GenreIds = artist.GenreIds
         });
     }
 
+    /// <inheritdoc />
     public void Update(ArtistDto artist)
     {
         var existingArtist = _repositoryInMemoryArtist.GetById(artist.Id);
-        if(existingArtist != null)
+        if (existingArtist != null)
         {
             existingArtist.Name = artist.Name ?? existingArtist.Name;
             existingArtist.AlbumIds = artist.AlbumIds ?? existingArtist.AlbumIds;
@@ -72,8 +74,25 @@ public class ArtistService : IArtistService
         }
     }
 
+    /// <inheritdoc />
     public void Delete(int id)
     {
         _repositoryInMemoryArtist.Delete(id);
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<ArtistDto> GetMaxAlbumsCountArtists()
+    {
+        return _repositoryInMemoryArtist
+            .GetAll()
+            .Where(a => a.AlbumIds.Count == _repositoryInMemoryArtist.GetAll().Max(a => a.AlbumIds.Count))
+            .Select(artist => new ArtistDto
+            {
+                Id = artist.Id,
+                Name = artist.Name,
+                Description = artist.Description,
+                AlbumIds = artist.AlbumIds,
+                GenreIds = artist.GenreIds
+            });
     }
 }

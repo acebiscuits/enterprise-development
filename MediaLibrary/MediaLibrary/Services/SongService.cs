@@ -1,22 +1,24 @@
 ﻿using MediaLibrary.Domain.Dto;
 using MediaLibrary.Domain.Models;
 using MediaLibrary.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Services;
 
+/// <summary>
+/// Service for managing song entities. Provides operations for adding, updating, retrieving, and deleting songs.
+/// </summary>
 public class SongService : ISongService
 {
-    private readonly IRepositoryInMemorySong _repositoryInMemorySong;
-    public SongService(IRepositoryInMemorySong repositoryInMemorySong)
+    private readonly IRepositorySong _repositoryInMemorySong;
+
+    /// <inheritdoc />
+    public SongService(IRepositorySong repositoryInMemorySong)
     {
         _repositoryInMemorySong = repositoryInMemorySong;
     }
-    public SongDto GetById(int id)
+
+    /// <inheritdoc />
+    public SongDto? GetById(int id)
     {
         var song = _repositoryInMemorySong.GetById(id);
         if (song == null)
@@ -32,6 +34,8 @@ public class SongService : ISongService
             Name = song.Name
         };
     }
+
+    /// <inheritdoc />
     public IEnumerable<SongDto> GetAll()
     {
         var songs = _repositoryInMemorySong.GetAll();
@@ -44,6 +48,8 @@ public class SongService : ISongService
             Name = song.Name
         });
     }
+
+    /// <inheritdoc />
     public void Add(SongCreateDto songCreateDto)
     {
         _repositoryInMemorySong.Add(new Song
@@ -54,6 +60,8 @@ public class SongService : ISongService
             Name = songCreateDto.Name
         });
     }
+
+    /// <inheritdoc />
     public void Update(SongDto songDto)
     {
         var existingSong = _repositoryInMemorySong.GetById(songDto.Id);
@@ -65,9 +73,26 @@ public class SongService : ISongService
             existingSong.NumberInAlbum = songDto.NumberInAlbum ?? existingSong.NumberInAlbum;
         }
     }
+
+    /// <inheritdoc />
     public void Delete(int id)
     {
         _repositoryInMemorySong?.Delete(id);
+    }
+    /// <inheritdoc />
+    public IEnumerable<SongDto> GetOrderedSongsInCertainAlbum(string albumTitle)
+    {
+        return _repositoryInMemorySong.GetAll()
+           .Where(s => s.AlbumName == albumTitle)
+           .OrderBy(s => s.NumberInAlbum)
+           .Select(s => new SongDto
+           {
+               AlbumName = s.AlbumName,
+               NumberInAlbum = s.NumberInAlbum,
+               Duration = s.Duration,
+               Id = s.Id,
+               Name = s.Name
+           });
     }
 
 }

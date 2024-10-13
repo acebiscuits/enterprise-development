@@ -1,26 +1,28 @@
 ﻿using MediaLibrary.Domain.Dto;
 using MediaLibrary.Domain.Models;
 using MediaLibrary.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Services;
 
+/// <summary>
+/// Service for managing album entities. Provides operations for adding, updating, retrieving, and deleting albums.
+/// </summary>
 public class AlbumService : IAlbumService
 {
-    private readonly IRepositoryInMemoryAlbum _repositoryInMemoryAlbum;
+    private readonly IRepositoryAlbum _repositoryAlbum;
+    private readonly IRepositorySong _repositorySong;
 
-    public AlbumService(IRepositoryInMemoryAlbum repositoryInMemoryAlbum)
+    /// <inheritdoc />
+    public AlbumService(IRepositoryAlbum repositoryAlbum, IRepositorySong repositorySong)
     {
-        _repositoryInMemoryAlbum = repositoryInMemoryAlbum;
+        _repositoryAlbum = repositoryAlbum;
+        _repositorySong = repositorySong;
     }
 
-    public AlbumDto GetById(int id)
+    /// <inheritdoc />
+    public AlbumDto? GetById(int id)
     {
-        var album = _repositoryInMemoryAlbum.GetById(id);
+        var album = _repositoryAlbum.GetById(id);
         if (album == null)
         {
             return null;
@@ -35,9 +37,10 @@ public class AlbumService : IAlbumService
         };
     }
 
+    /// <inheritdoc />
     public IEnumerable<AlbumDto> GetAll()
     {
-        var albums = _repositoryInMemoryAlbum.GetAll();
+        var albums = _repositoryAlbum.GetAll();
         return albums.Select(album => new AlbumDto
         {
             Id = album.Id,
@@ -48,9 +51,10 @@ public class AlbumService : IAlbumService
         });
     }
 
+    /// <inheritdoc />
     public void Add(AlbumCreateDto album)
     {
-        _repositoryInMemoryAlbum.Add(new Album
+        _repositoryAlbum.Add(new Album
         {
             ArtistId = album.ArtistId,
             Title = album.Title,
@@ -58,9 +62,11 @@ public class AlbumService : IAlbumService
             SongIds = album.SongIds
         });
     }
+
+    /// <inheritdoc />
     public void Update(AlbumDto album)
-    { 
-        var existingAlbum = _repositoryInMemoryAlbum.GetById(album.Id);
+    {
+        var existingAlbum = _repositoryAlbum.GetById(album.Id);
         if (existingAlbum != null)
         {
             existingAlbum.ArtistId = album.ArtistId ?? existingAlbum.ArtistId;
@@ -69,8 +75,71 @@ public class AlbumService : IAlbumService
             existingAlbum.SongIds = album.SongIds ?? existingAlbum.SongIds;
         }
     }
+
+    /// <inheritdoc />
     public void Delete(int id)
     {
-        _repositoryInMemoryAlbum.Delete(id);
+        _repositoryAlbum.Delete(id);
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<AlbumInfoAndDurationDto> GetInfoAboutAlbumsInCertainYear(int year)
+    {
+        return _repositoryAlbum.GetAll()
+            .Where(a => a.ReleaseDate == year)
+            .Select(a => new AlbumInfoAndDurationDto
+            {
+                ArtistId = a.ArtistId,
+                Title = a.Title,
+                ReleaseDate = a.ReleaseDate,
+                SongIds = a.SongIds,
+                Id = a.Id,
+                SongsCount = a.SongIds.Count
+            });
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<AlbumDto> GetTopFiveAlbusByDuration()
+    {
+        return _repositorySong.GetAll().GroupBy(s => s.AlbumName)
+              .Select(group => new
+              {
+                  AlbumName = group.Key,
+                  TotalDuration = group.Sum(s => s.Duration.TotalSeconds)
+              })
+              .Where(group => _repositoryAlbum.GetAll().Any(album => album.Title == group.AlbumName))
+              .OrderByDescending(sia => sia.TotalDuration)
+              .Take(5)
+              .Select(album => _repositoryAlbum.GetAll().FirstOrDefault(al => al.Title == album.AlbumName))
+              .Where(album => album != null)
+              .Select(a => new AlbumDto
+              {
+                  ArtistId = a!.ArtistId,
+                  Title = a.Title,
+                  ReleaseDate = a.ReleaseDate,
+                  SongIds = a.SongIds,
+                  Id = a.Id
+              });
+    }
+
+    /// <inheritdoc />
+    public MinAvgMaxDurationDto GetMinAvgMaxAlbumsDuration()
+    {
+        var durationsByAlbum = _repositorySong.GetAll()
+            .Where(s => s.AlbumName != null && s.Duration.TotalSeconds > 0)
+            .GroupBy(s => s.AlbumName)
+            .Select(group => new
+            {
+                AlbumName = group.Key,
+                TotalDuration = group.Sum(s => s.Duration.TotalSeconds)
+            })
+            .ToList();
+
+        return new MinAvgMaxDurationDto
+        {
+            Min = durationsByAlbum.Min(d => d.TotalDuration),
+            Max = durationsByAlbum.Max(d => d.TotalDuration),
+            Avg = durationsByAlbum.Average(d => d.TotalDuration)
+        };
     }
 }

@@ -1,27 +1,27 @@
 ﻿using MediaLibrary.Domain.Dto;
 using MediaLibrary.Domain.Models;
 using MediaLibrary.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MediaLibrary.Domain.Services;
 
+/// <summary>
+/// Service for managing genre entities. Provides operations for adding, updating, retrieving, and deleting genres.
+/// </summary>
 public class GenreService : IGenreService
 {
-    private readonly IRepositoryInMemoryGenre _repositoryInMemoryGenre;
+    private readonly IRepositoryGenre _repositoryInMemoryGenre;
 
-    public GenreService(IRepositoryInMemoryGenre repositoryInMemoryGenre)
+    /// <inheritdoc />
+    public GenreService(IRepositoryGenre repositoryInMemoryGenre)
     {
         _repositoryInMemoryGenre = repositoryInMemoryGenre;
     }
 
-    public GenreDto GetById(int id)
+    /// <inheritdoc />
+    public GenreDto? GetById(int id)
     {
         var genre = _repositoryInMemoryGenre.GetById(id);
-        if(genre == null)
+        if (genre == null)
         {
             return null;
         }
@@ -32,6 +32,8 @@ public class GenreService : IGenreService
             Title = genre.Title
         };
     }
+
+    /// <inheritdoc />
     public IEnumerable<GenreDto> GetAll()
     {
         var genres = _repositoryInMemoryGenre.GetAll();
@@ -42,6 +44,7 @@ public class GenreService : IGenreService
             Title = genre.Title
         });
     }
+    /// <inheritdoc />
     public void Add(GenreCreateDto genreCreateDto)
     {
         _repositoryInMemoryGenre.Add(new Genre
@@ -50,15 +53,17 @@ public class GenreService : IGenreService
             Title = genreCreateDto.Title
         });
     }
+    /// <inheritdoc />
     public void Update(GenreDto genreDto)
     {
         var genre = _repositoryInMemoryGenre.GetById(genreDto.Id);
-        if(genre != null)
+        if (genre != null)
         {
             genre.ArtistIds = genreDto.ArtistIds ?? genre.ArtistIds;
             genre.Title = genreDto.Title ?? genre.Title;
         }
     }
+    /// <inheritdoc />
     public void Delete(int id)
     {
         _repositoryInMemoryGenre.Delete(id);
