@@ -3,18 +3,54 @@ using MediaLibrary.Domain.Services;
 
 namespace MediaLibrary.Tests.Fixtures;
 
+/// <summary>
+/// Fixture for tests
+/// </summary>
 public class MediaLibraryFixture
 {
+    /// <summary>
+    /// Repository for retrieving information about all artists and artists with the maximum number of albums.
+    /// </summary>
     public IRepositoryArtist infoAboutAllArtistsAndWithMaxAlbumsRepository { get; private set; }
+    /// <summary>
+    /// Repository for retrieving ordered tracks in an album.
+    /// </summary>
     public IRepositorySong OrderedTracksInAlbumRepository { get; private set; }
+    /// <summary>
+    /// Repository for retrieving all albums released in a certain year.
+    /// </summary>
     public IRepositoryAlbum allAlbumsInCertainYearRepository { get; private set; }
+    /// <summary>
+    /// Repository for retrieving songs from the top five albums by duration.
+    /// </summary>
     public IRepositorySong songsForTopFiveAlbumsRepository { get; private set; }
+    /// <summary>
+    /// Repository for retrieving information about the minimum, maximum, and median album durations.
+    /// </summary>
     public IRepositorySong RepositoryMaxMinMedAlbumsDurationInfo { get; private set; }
+    /// <summary>
+    /// Service for artist-related operations.
+    /// </summary>
     public IArtistService ArtistService { get; private set; }
+    /// <summary>
+    /// Service for song-related operations.
+    /// </summary>
     public ISongService SongService { get; private set; }
+    /// <summary>
+    /// Service for album-related operations.
+    /// </summary>
     public IAlbumService AlbumService { get; private set; }
+    /// <summary>
+    /// Service for retrieving songs from the top five albums.
+    /// </summary>
     public ISongService SongServiceTopFiveAlbums { get; private set; }
+    /// <summary>
+    /// Service for retrieving information about the minimum, maximum, and median album durations.
+    /// </summary>
     public ISongService MaxMinMedAlbumsDurationInfoService { get; private set; }
+    /// <summary>
+    /// Initializes the fixture with predefined repositories and services.
+    /// </summary>
     public MediaLibraryFixture()
     {
         infoAboutAllArtistsAndWithMaxAlbumsRepository = new RepositoryInMemoryArtist
