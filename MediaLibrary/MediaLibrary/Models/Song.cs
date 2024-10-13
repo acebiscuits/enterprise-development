@@ -24,7 +24,7 @@ public class Song : IEntity
     /// Name of album containing this song
     /// </summary>
     /// <example>The Bird's The Word</example>
-    public required string AlbumName { get; set; }
+    public string? AlbumName { get; set; }
     /// <summary>
     /// Song's duration (HHMMSS)
     /// </summary>
