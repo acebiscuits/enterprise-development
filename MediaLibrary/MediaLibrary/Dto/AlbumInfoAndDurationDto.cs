@@ -28,7 +28,7 @@ public class AlbumInfoAndDurationDto
     /// <summary>
     /// The list of song IDs associated with this album.
     /// </summary>
-    public required List<int> SongIds { get; set; } = new();
+    public required List<int> SongIds { get; set; } = [];
 
 
     /// <summary>

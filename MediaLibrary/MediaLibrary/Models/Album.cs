@@ -29,5 +29,5 @@ public class Album : IEntity
     /// List of songs in this album
     /// </summary>
     /// <example>1, 2</example>
-    public required List<int> SongIds { get; set; } = new();
+    public required List<int> SongIds { get; set; } = [];
 }

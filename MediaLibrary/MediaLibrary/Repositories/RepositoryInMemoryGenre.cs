@@ -4,7 +4,7 @@ namespace MediaLibrary.Domain.Repositories;
 
 /// <summary>
 /// In-memory repository for managing Genre entities.
-/// Inherits from the generic RepositoryInMemory class.
+/// Inherits from the generic Repository class.
 /// </summary>
 public class RepositoryInMemoryGenre : RepositoryInMemory<Genre>, IRepositoryGenre
 {

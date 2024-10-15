@@ -10,7 +10,10 @@ public class ArtistService : IArtistService
 {
     private readonly IRepositoryArtist _repositoryInMemoryArtist;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArtistService"/> class.
+    /// </summary>
+    /// <param name="repositoryInMemoryArtist">Repository for managing artist data.</param>
     public ArtistService(IRepositoryArtist repositoryInMemoryArtist)
     {
         _repositoryInMemoryArtist = repositoryInMemoryArtist;
@@ -67,9 +70,9 @@ public class ArtistService : IArtistService
         var existingArtist = _repositoryInMemoryArtist.GetById(artist.Id);
         if (existingArtist != null)
         {
-            existingArtist.Name = artist.Name ?? existingArtist.Name;
-            existingArtist.AlbumIds = artist.AlbumIds ?? existingArtist.AlbumIds;
-            existingArtist.GenreIds = artist.GenreIds ?? existingArtist.GenreIds;
+            existingArtist.Name = artist.Name;
+            existingArtist.AlbumIds = artist.AlbumIds;
+            existingArtist.GenreIds = artist.GenreIds;
             existingArtist.Description = artist.Description ?? existingArtist.Description;
         }
     }

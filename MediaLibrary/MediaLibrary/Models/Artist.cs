@@ -24,10 +24,10 @@ public class Artist : IEntity
     /// Artist's Album Ids
     /// </summary>
     /// <example>1, 2</example>
-    public List<int> AlbumIds { get; set; } = new();
+    public List<int> AlbumIds { get; set; } = [];
     /// <summary>
     /// Artist's Genre Ids
     /// </summary>
     /// <example>1, 2</example>
-    public List<int> GenreIds { get; set; } = new();
+    public List<int> GenreIds { get; set; } = [];
 }

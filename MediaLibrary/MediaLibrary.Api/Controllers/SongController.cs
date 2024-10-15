@@ -106,12 +106,12 @@ public class SongController : ControllerBase
     /// <summary>
     /// Gets the ordered list of songs in a specific album.
     /// </summary>
-    /// <param name="AlbumTitle">The title of the album to retrieve songs from.</param>
+    /// <param name="albumTitle">The title of the album to retrieve songs from.</param>
     /// <returns>A list of ordered song DTOs from the specified album, or NotFound if no songs are found.</returns>
-    [HttpGet("{AlbumTitle}")]
-    public ActionResult GetOrderedSongsInCertainAlbum(string AlbumTitle)
+    [HttpGet("{albumTitle}")]
+    public ActionResult GetOrderedSongsInCertainAlbum(string albumTitle)
     {
-        var songs = _songService.GetOrderedSongsInCertainAlbum(AlbumTitle);
+        var songs = _songService.GetOrderedSongsInCertainAlbum(albumTitle);
         if (songs == null)
         {
             return NotFound();

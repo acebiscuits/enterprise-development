@@ -6,13 +6,17 @@ namespace MediaLibrary.Domain.Repositories;
 /// Generic in-memory repository implementation for managing entities of type T.
 /// </summary>
 /// <typeparam name="T">The type of the entity being managed, must implement IEntity interface.</typeparam>
-public class RepositoryInMemory<T> : IRepositoryInMemory<T> where T : class, IEntity
+public class RepositoryInMemory<T> : IRepository<T> where T : class, IEntity
 {
-    /// <inheritdoc />
-    private List<T> _entities = new();
+    /// <summary>
+    /// The collection of entities stored in memory.
+    /// </summary>
+    private List<T> _entities = [];
 
-    /// <inheritdoc />
-    private int _currentId = 0;
+    /// <summary>
+    /// The current ID for assigning unique identifiers to entities.
+    /// </summary>
+    private int _currentId;
     /// <summary>
     /// Initializes a new instance of the class.
     /// </summary>
@@ -45,7 +49,7 @@ public class RepositoryInMemory<T> : IRepositoryInMemory<T> where T : class, IEn
     }
 
     /// <inheritdoc />
-    virtual public void Update(T entity)
+    public virtual void Update(T entity)
     {
     }
 

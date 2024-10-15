@@ -12,7 +12,11 @@ public class AlbumService : IAlbumService
     private readonly IRepositoryAlbum _repositoryAlbum;
     private readonly IRepositorySong _repositorySong;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AlbumService"/> class.
+    /// </summary>
+    /// <param name="repositoryAlbum">Repository for managing album data.</param>
+    /// <param name="repositorySong">Repository for managing song data.</param>
     public AlbumService(IRepositoryAlbum repositoryAlbum, IRepositorySong repositorySong)
     {
         _repositoryAlbum = repositoryAlbum;
@@ -72,7 +76,7 @@ public class AlbumService : IAlbumService
             existingAlbum.ArtistId = album.ArtistId ?? existingAlbum.ArtistId;
             existingAlbum.Title = album.Title ?? existingAlbum.Title;
             existingAlbum.ReleaseDate = album.ReleaseDate ?? existingAlbum.ReleaseDate;
-            existingAlbum.SongIds = album.SongIds ?? existingAlbum.SongIds;
+            existingAlbum.SongIds = album.SongIds;
         }
     }
 
@@ -99,7 +103,7 @@ public class AlbumService : IAlbumService
     }
 
     /// <inheritdoc />
-    public IEnumerable<AlbumDto> GetTopFiveAlbusByDuration()
+    public IEnumerable<AlbumDto> GetTopFiveAlbumsByDuration()
     {
         return _repositorySong.GetAll().GroupBy(s => s.AlbumName)
               .Select(group => new

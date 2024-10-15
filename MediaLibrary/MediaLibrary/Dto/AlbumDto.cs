@@ -31,5 +31,5 @@ public class AlbumDto
     /// <summary>
     /// The list of song IDs associated with this album.
     /// </summary>
-    public List<int> SongIds { get; set; } = new();
+    public List<int> SongIds { get; set; } = [];
 }

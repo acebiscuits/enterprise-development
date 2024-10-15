@@ -21,5 +21,5 @@ public class GenreDto
     /// <summary>
     /// The list of artist IDs associated with this genre.
     /// </summary>
-    public List<int> ArtistIds { get; set; } = new();
+    public List<int> ArtistIds { get; set; } = [];
 }

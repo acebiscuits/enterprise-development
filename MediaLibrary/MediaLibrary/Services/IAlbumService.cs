@@ -46,7 +46,7 @@ public interface IAlbumService
     /// Gets the top 5 albums by total duration.
     /// </summary>
     /// <returns>Top 5 longest albums.</returns>
-    public IEnumerable<AlbumDto> GetTopFiveAlbusByDuration();
+    public IEnumerable<AlbumDto> GetTopFiveAlbumsByDuration();
 
     /// <summary>
     /// Gets min, avg, and max album durations.

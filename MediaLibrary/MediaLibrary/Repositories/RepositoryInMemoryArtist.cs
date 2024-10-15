@@ -4,7 +4,7 @@ namespace MediaLibrary.Domain.Repositories;
 
 /// <summary>
 /// In-memory repository for managing Artist entities.
-/// Inherits from the generic RepositoryInMemory class.
+/// Inherits from the generic Repository class.
 /// </summary>
 public class RepositoryInMemoryArtist : RepositoryInMemory<Artist>, IRepositoryArtist
 {

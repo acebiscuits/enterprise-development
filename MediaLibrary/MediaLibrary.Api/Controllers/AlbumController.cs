@@ -114,10 +114,6 @@ public class AlbumController : ControllerBase
     public ActionResult<IEnumerable<AlbumInfoAndDurationDto>> GetInfoAboutAlbumsInCertainYear(int year)
     {
         var albumsInfo = _albumService.GetInfoAboutAlbumsInCertainYear(year);
-        if (albumsInfo == null)
-        {
-            return NotFound();
-        }
         return Ok(albumsInfo);
     }
 
@@ -126,13 +122,9 @@ public class AlbumController : ControllerBase
     /// </summary>
     /// <returns>A list of the top five albums by duration, or NotFound if no albums are found.</returns>
     [HttpGet("top-five-by-duration")]
-    public ActionResult<IEnumerable<AlbumDto>> GetTopFiveAlbusByDuration()
+    public ActionResult<IEnumerable<AlbumDto>> GetTopFiveAlbumsByDuration()
     {
-        var albums = _albumService.GetTopFiveAlbusByDuration();
-        if (albums == null)
-        {
-            return NotFound();
-        }
+        var albums = _albumService.GetTopFiveAlbumsByDuration();
         return Ok(albums);
     }
 
@@ -144,10 +136,6 @@ public class AlbumController : ControllerBase
     public ActionResult<IEnumerable<MinAvgMaxDurationDto>> GetMinAvgMaxAlbumsDuration()
     {
         var durations = _albumService.GetMinAvgMaxAlbumsDuration();
-        if (durations == null)
-        {
-            return NotFound();
-        }
         return Ok(durations);
     }
 }

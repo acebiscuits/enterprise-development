@@ -11,7 +11,10 @@ public class SongService : ISongService
 {
     private readonly IRepositorySong _repositoryInMemorySong;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SongService"/> class.
+    /// </summary>
+    /// <param name="repositoryInMemorySong">Repository for managing song data.</param>
     public SongService(IRepositorySong repositoryInMemorySong)
     {
         _repositoryInMemorySong = repositoryInMemorySong;
@@ -68,8 +71,8 @@ public class SongService : ISongService
         if (existingSong != null)
         {
             existingSong.Duration = songDto.Duration ?? existingSong.Duration;
-            existingSong.Name = songDto.Name ?? existingSong.Name;
-            existingSong.AlbumName = songDto.AlbumName ?? existingSong.Name;
+            existingSong.Name = songDto.Name;
+            existingSong.AlbumName = songDto.AlbumName ?? existingSong.AlbumName;
             existingSong.NumberInAlbum = songDto.NumberInAlbum ?? existingSong.NumberInAlbum;
         }
     }

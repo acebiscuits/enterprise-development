@@ -11,7 +11,10 @@ public class GenreService : IGenreService
 {
     private readonly IRepositoryGenre _repositoryInMemoryGenre;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GenreService"/> class.
+    /// </summary>
+    /// <param name="repositoryInMemoryGenre">Repository for managing genre data.</param>
     public GenreService(IRepositoryGenre repositoryInMemoryGenre)
     {
         _repositoryInMemoryGenre = repositoryInMemoryGenre;
@@ -59,7 +62,7 @@ public class GenreService : IGenreService
         var genre = _repositoryInMemoryGenre.GetById(genreDto.Id);
         if (genre != null)
         {
-            genre.ArtistIds = genreDto.ArtistIds ?? genre.ArtistIds;
+            genre.ArtistIds = genreDto.ArtistIds;
             genre.Title = genreDto.Title ?? genre.Title;
         }
     }

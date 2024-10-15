@@ -11,7 +11,7 @@ public class MediaLibraryFixture
     /// <summary>
     /// Repository for retrieving information about all artists and artists with the maximum number of albums.
     /// </summary>
-    public IRepositoryArtist infoAboutAllArtistsAndWithMaxAlbumsRepository { get; private set; }
+    public IRepositoryArtist InfoAboutAllArtistsAndWithMaxAlbumsRepository { get; private set; }
     /// <summary>
     /// Repository for retrieving ordered tracks in an album.
     /// </summary>
@@ -19,15 +19,15 @@ public class MediaLibraryFixture
     /// <summary>
     /// Repository for retrieving all albums released in a certain year.
     /// </summary>
-    public IRepositoryAlbum allAlbumsInCertainYearRepository { get; private set; }
+    public IRepositoryAlbum AllAlbumsInCertainYearRepository { get; private set; }
     /// <summary>
     /// Repository for retrieving songs from the top five albums by duration.
     /// </summary>
-    public IRepositorySong songsForTopFiveAlbumsRepository { get; private set; }
+    public IRepositorySong SongsForTopFiveAlbumsRepository { get; private set; }
     /// <summary>
     /// Repository for retrieving information about the minimum, maximum, and median album durations.
     /// </summary>
-    public IRepositorySong RepositoryMaxMinMedAlbumsDurationInfo { get; private set; }
+    public IRepositorySong MaxMinMedAlbumsDurationInfoRepository { get; private set; }
     /// <summary>
     /// Service for artist-related operations.
     /// </summary>
@@ -53,7 +53,7 @@ public class MediaLibraryFixture
     /// </summary>
     public MediaLibraryFixture()
     {
-        infoAboutAllArtistsAndWithMaxAlbumsRepository = new RepositoryInMemoryArtist
+        InfoAboutAllArtistsAndWithMaxAlbumsRepository = new RepositoryInMemoryArtist
         (
             [
                 new() { Id = 1, Name = "Jon Bon Jovi", Description = "У него есть кожаная куртка с дюжиной застежек", AlbumIds = [1, 2], GenreIds = [1, 2] },
@@ -78,7 +78,7 @@ public class MediaLibraryFixture
             ]
         );
 
-        allAlbumsInCertainYearRepository = new RepositoryInMemoryAlbum
+        AllAlbumsInCertainYearRepository = new RepositoryInMemoryAlbum
         (
             [
                 new() { Id = 1, Title = "Against The Wind", ArtistId = 2, ReleaseDate = 1980, SongIds = [1, 2, 12, 14] },
@@ -88,7 +88,7 @@ public class MediaLibraryFixture
             ]
         );
 
-        songsForTopFiveAlbumsRepository = new RepositoryInMemorySong
+        SongsForTopFiveAlbumsRepository = new RepositoryInMemorySong
         (
             [
                 new() { Id = 1, AlbumName = "What is the word?", Duration = TimeSpan.FromSeconds(100), Name = "A.. bird. Bird is the word", NumberInAlbum = 1 },
@@ -103,7 +103,7 @@ public class MediaLibraryFixture
             ]
         );
 
-        RepositoryMaxMinMedAlbumsDurationInfo = new RepositoryInMemorySong
+        MaxMinMedAlbumsDurationInfoRepository = new RepositoryInMemorySong
         (
             [
                 new() { Id = 1, AlbumName = "Against The Wind", Name = "The Horisontal Bop", Duration = TimeSpan.FromSeconds(241), NumberInAlbum = 1 },
@@ -117,10 +117,10 @@ public class MediaLibraryFixture
                 new() { Id = 9, AlbumName = "Beautiful Loser", Name = "Black Night", Duration = TimeSpan.FromSeconds(234), NumberInAlbum = 3 }
             ]
         );
-        ArtistService = new ArtistService(infoAboutAllArtistsAndWithMaxAlbumsRepository);
+        ArtistService = new ArtistService(InfoAboutAllArtistsAndWithMaxAlbumsRepository);
         SongService = new SongService(OrderedTracksInAlbumRepository);
-        AlbumService = new AlbumService(allAlbumsInCertainYearRepository, songsForTopFiveAlbumsRepository);
-        SongServiceTopFiveAlbums = new SongService(songsForTopFiveAlbumsRepository);
-        MaxMinMedAlbumsDurationInfoService = new SongService(RepositoryMaxMinMedAlbumsDurationInfo);
+        AlbumService = new AlbumService(AllAlbumsInCertainYearRepository, SongsForTopFiveAlbumsRepository);
+        SongServiceTopFiveAlbums = new SongService(SongsForTopFiveAlbumsRepository);
+        MaxMinMedAlbumsDurationInfoService = new SongService(MaxMinMedAlbumsDurationInfoRepository);
     }
 }

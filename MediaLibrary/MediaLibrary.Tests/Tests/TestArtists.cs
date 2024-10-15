@@ -95,7 +95,7 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
     [Fact]
     public void TestTopFiveAlbumsByDuration()
     {
-        var query = _fixture.songsForTopFiveAlbumsRepository.GetAll().GroupBy(q => q.AlbumName)
+        var query = _fixture.SongsForTopFiveAlbumsRepository.GetAll().GroupBy(q => q.AlbumName)
             .Select(a => new { AlbumName = a.Key, TotalDuration = a.Aggregate(TimeSpan.Zero, (total, song) => total + song.Duration) })
             .OrderByDescending(d => d.TotalDuration).Take(5).ToList();
 
@@ -113,13 +113,13 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
     {
         var query = _fixture.ArtistService
         .GetAll()
-        .Where(a => a.AlbumIds.Count == _fixture.infoAboutAllArtistsAndWithMaxAlbumsRepository.GetAll().Max(a => a.AlbumIds.Count))
+        .Where(a => a.AlbumIds.Count == _fixture.InfoAboutAllArtistsAndWithMaxAlbumsRepository.GetAll().Max(a => a.AlbumIds.Count))
         .Select(group => new
         {
             Id = group.Id,
             Count = group.AlbumIds.Count,
         }).ToList();
-        var maxAlbumCount = _fixture.infoAboutAllArtistsAndWithMaxAlbumsRepository
+        var maxAlbumCount = _fixture.InfoAboutAllArtistsAndWithMaxAlbumsRepository
         .GetAll()
         .Max(a => a.AlbumIds.Count);
 
@@ -140,10 +140,10 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
 
         var minDuration = 264;
         var maxDuration = 723;
-        var AvgDuration = 545.75;
+        var avgDuration = 545.75;
 
         Assert.Equal(maxDuration, query.Max(a => a.TotalDuration));
         Assert.Equal(minDuration, query.Min(a => a.TotalDuration));
-        Assert.Equal(AvgDuration, query.Average(a => a.TotalDuration));
+        Assert.Equal(avgDuration, query.Average(a => a.TotalDuration));
     }
 }

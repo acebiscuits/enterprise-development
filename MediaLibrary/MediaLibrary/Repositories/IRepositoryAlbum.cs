@@ -4,8 +4,6 @@ namespace MediaLibrary.Domain.Repositories;
 
 /// <summary>
 /// In-memory repository interface specifically for managing album entities.
-/// Inherits generic CRUD operations from IRepositoryInMemory.
+/// Inherits generic CRUD operations from IRepository.
 /// </summary>
-public interface IRepositoryAlbum : IRepositoryInMemory<Album>
-{
-}
+public interface IRepositoryAlbum : IRepository<Album>;

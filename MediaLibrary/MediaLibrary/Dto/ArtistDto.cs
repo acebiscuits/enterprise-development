@@ -27,10 +27,10 @@ public class ArtistDto
     /// <summary>
     /// The list of album IDs associated with the artist.
     /// </summary>
-    public List<int> AlbumIds { get; set; } = new();
+    public List<int> AlbumIds { get; set; } = [];
 
     /// <summary>
     /// The list of genre IDs associated with the artist.
     /// </summary>
-    public List<int> GenreIds { get; set; } = new();
+    public List<int> GenreIds { get; set; } = [];
 }

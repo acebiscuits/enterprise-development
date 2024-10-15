@@ -22,7 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<ISongService, SongService>();
 
-        services.AddScoped(typeof(IRepositoryInMemory<>), typeof(RepositoryInMemory<>));
+        services.AddScoped(typeof(IRepository<>), typeof(RepositoryInMemory<>));
         services.AddSingleton<IRepositoryArtist, RepositoryInMemoryArtist>();
         services.AddSingleton<IRepositoryAlbum, RepositoryInMemoryAlbum>();
         services.AddSingleton<IRepositoryGenre, RepositoryInMemoryGenre>();

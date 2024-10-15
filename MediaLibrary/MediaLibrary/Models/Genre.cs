@@ -19,5 +19,5 @@ public class Genre : IEntity
     /// List of artist Ids in this genre
     /// </summary>
     /// <example>1, 2</example>
-    public List<int> ArtistIds { get; set; } = new();
+    public List<int> ArtistIds { get; set; } = [];
 }
