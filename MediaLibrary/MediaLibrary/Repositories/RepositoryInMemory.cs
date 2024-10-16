@@ -11,12 +11,19 @@ public class RepositoryInMemory<T> : IRepository<T> where T : class, IEntity
     /// <summary>
     /// The collection of entities stored in memory.
     /// </summary>
-    private List<T> _entities = [];
+    private List<T> _entities;
 
     /// <summary>
     /// The current ID for assigning unique identifiers to entities.
     /// </summary>
     private int _currentId;
+    /// <summary>
+    /// Initializes a new instance of the class.
+    /// </summary>
+    public RepositoryInMemory()
+    {
+        _entities = [];
+    }
     /// <summary>
     /// Initializes a new instance of the class.
     /// </summary>
