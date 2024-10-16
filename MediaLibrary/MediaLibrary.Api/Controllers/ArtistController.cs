@@ -113,10 +113,6 @@ public class ArtistController : ControllerBase
     public ActionResult<IEnumerable<ArtistDto>> GetMaxAlbumsCountArtists()
     {
         var artists = _artistService.GetMaxAlbumsCountArtists();
-        if (artists == null)
-        {
-            return NotFound();
-        }
         return Ok(artists);
     }
 }

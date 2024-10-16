@@ -20,13 +20,6 @@ public class RepositoryInMemory<T> : IRepository<T> where T : class, IEntity
     /// <summary>
     /// Initializes a new instance of the class.
     /// </summary>
-    public RepositoryInMemory()
-    {
-        _entities = [];
-    }
-    /// <summary>
-    /// Initializes a new instance of the class.
-    /// </summary>
     public RepositoryInMemory(List<T> entities)
     {
         _entities = entities;

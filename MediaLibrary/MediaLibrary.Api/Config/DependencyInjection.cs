@@ -13,9 +13,8 @@ public static class DependencyInjection
     /// Registers services for the application in the dependency injection container.
     /// </summary>
     /// <param name="services">The service collection where services are registered.</param>
-    /// <param name="configuration">The configuration settings for the application.</param>
     /// <returns>Updated IServiceCollection with registered services.</returns>
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IArtistService, ArtistService>();
         services.AddScoped<IAlbumService, AlbumService>();

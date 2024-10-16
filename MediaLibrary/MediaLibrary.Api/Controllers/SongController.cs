@@ -112,10 +112,6 @@ public class SongController : ControllerBase
     public ActionResult GetOrderedSongsInCertainAlbum(string albumTitle)
     {
         var songs = _songService.GetOrderedSongsInCertainAlbum(albumTitle);
-        if (songs == null)
-        {
-            return NotFound();
-        }
         return Ok(songs);
     }
 }

@@ -80,7 +80,7 @@ public class SongService : ISongService
     /// <inheritdoc />
     public void Delete(int id)
     {
-        _repositoryInMemorySong?.Delete(id);
+        _repositoryInMemorySong.Delete(id);
     }
     /// <inheritdoc />
     public IEnumerable<SongDto> GetOrderedSongsInCertainAlbum(string albumTitle)

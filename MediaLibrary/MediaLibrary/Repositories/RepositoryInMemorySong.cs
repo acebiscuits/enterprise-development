@@ -8,7 +8,10 @@ namespace MediaLibrary.Domain.Repositories;
 /// </summary>
 public class RepositoryInMemorySong : RepositoryInMemory<Song>, IRepositorySong
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RepositoryInMemorySong"/> class with initial data.
+    /// </summary>
+    /// <param name="initData">The initial list of songs for the repository.</param>
     public RepositoryInMemorySong(List<Song> initData) : base(initData) { }
     /// <inheritdoc />
     public override void Update(Song song)
