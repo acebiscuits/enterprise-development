@@ -77,8 +77,8 @@ public class GenreController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        var exisctingGenre = _genreService.GetById(genreDto.Id);
-        if (exisctingGenre == null)
+        var existingGenre = _genreService.GetById(genreDto.Id);
+        if (existingGenre == null)
         {
             return NotFound();
         }
