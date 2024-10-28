@@ -9,21 +9,21 @@ namespace MediaLibrary.Domain.Services;
 /// </summary>
 public class GenreService : IGenreService
 {
-    private readonly IRepositoryGenre _repositoryInMemoryGenre;
+    private readonly IRepositoryGenre _repositoryGenre;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GenreService"/> class.
     /// </summary>
-    /// <param name="repositoryInMemoryGenre">Repository for managing genre data.</param>
-    public GenreService(IRepositoryGenre repositoryInMemoryGenre)
+    /// <param name="repositoryGenre">Repository for managing genre data.</param>
+    public GenreService(IRepositoryGenre repositoryGenre)
     {
-        _repositoryInMemoryGenre = repositoryInMemoryGenre;
+        _repositoryGenre = repositoryGenre;
     }
 
     /// <inheritdoc />
-    public GenreDto? GetById(int id)
+    public async Task<GenreDto?> GetById(int id)
     {
-        var genre = _repositoryInMemoryGenre.GetById(id);
+        var genre = await _repositoryGenre.GetById(id);
         if (genre == null)
         {
             return null;
@@ -37,9 +37,9 @@ public class GenreService : IGenreService
     }
 
     /// <inheritdoc />
-    public IEnumerable<GenreDto> GetAll()
+    public async Task<IEnumerable<GenreDto>> GetAll()
     {
-        var genres = _repositoryInMemoryGenre.GetAll();
+        var genres = await _repositoryGenre.GetAll();
         return genres.Select(genre => new GenreDto
         {
             Id = genre.Id,
@@ -48,18 +48,18 @@ public class GenreService : IGenreService
         });
     }
     /// <inheritdoc />
-    public void Add(GenreCreateDto genreCreateDto)
+    public async Task Add(GenreCreateDto genreCreateDto)
     {
-        _repositoryInMemoryGenre.Add(new Genre
+        await _repositoryGenre.Add(new Genre
         {
             ArtistIds = genreCreateDto.ArtistIds,
             Title = genreCreateDto.Title
         });
     }
     /// <inheritdoc />
-    public void Update(GenreDto genreDto)
+    public async Task Update(GenreDto genreDto)
     {
-        var genre = _repositoryInMemoryGenre.GetById(genreDto.Id);
+        var genre = await _repositoryGenre.GetById(genreDto.Id);
         if (genre != null)
         {
             genre.ArtistIds = genreDto.ArtistIds;
@@ -67,8 +67,8 @@ public class GenreService : IGenreService
         }
     }
     /// <inheritdoc />
-    public void Delete(int id)
+    public async Task Delete(int id)
     {
-        _repositoryInMemoryGenre.Delete(id);
+        await _repositoryGenre.Delete(id);
     }
 }

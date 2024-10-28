@@ -9,21 +9,21 @@ namespace MediaLibrary.Domain.Services;
 /// </summary>
 public class SongService : ISongService
 {
-    private readonly IRepositorySong _repositoryInMemorySong;
+    private readonly IRepositorySong _repositorySong;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SongService"/> class.
     /// </summary>
-    /// <param name="repositoryInMemorySong">Repository for managing song data.</param>
-    public SongService(IRepositorySong repositoryInMemorySong)
+    /// <param name="repositorySong">Repository for managing song data.</param>
+    public SongService(IRepositorySong repositorySong)
     {
-        _repositoryInMemorySong = repositoryInMemorySong;
+        _repositorySong = repositorySong;
     }
 
     /// <inheritdoc />
-    public SongDto? GetById(int id)
+    public async Task<SongDto?> GetById(int id)
     {
-        var song = _repositoryInMemorySong.GetById(id);
+        var song = await _repositorySong.GetById(id);
         if (song == null)
         {
             return null;
@@ -39,9 +39,9 @@ public class SongService : ISongService
     }
 
     /// <inheritdoc />
-    public IEnumerable<SongDto> GetAll()
+    public async Task<IEnumerable<SongDto>> GetAll()
     {
-        var songs = _repositoryInMemorySong.GetAll();
+        var songs = await _repositorySong.GetAll();
         return songs.Select(song => new SongDto
         {
             Id = song.Id,
@@ -53,9 +53,9 @@ public class SongService : ISongService
     }
 
     /// <inheritdoc />
-    public void Add(SongCreateDto songCreateDto)
+    public async Task Add(SongCreateDto songCreateDto)
     {
-        _repositoryInMemorySong.Add(new Song
+        await _repositorySong.Add(new Song
         {
             AlbumName = songCreateDto.AlbumName,
             NumberInAlbum = songCreateDto.NumberInAlbum,
@@ -65,9 +65,9 @@ public class SongService : ISongService
     }
 
     /// <inheritdoc />
-    public void Update(SongDto songDto)
+    public async Task Update(SongDto songDto)
     {
-        var existingSong = _repositoryInMemorySong.GetById(songDto.Id);
+        var existingSong = await _repositorySong.GetById(songDto.Id);
         if (existingSong != null)
         {
             existingSong.Duration = songDto.Duration ?? existingSong.Duration;
@@ -78,14 +78,15 @@ public class SongService : ISongService
     }
 
     /// <inheritdoc />
-    public void Delete(int id)
+    public async Task Delete(int id)
     {
-        _repositoryInMemorySong.Delete(id);
+        await _repositorySong.Delete(id);
     }
     /// <inheritdoc />
-    public IEnumerable<SongDto> GetOrderedSongsInCertainAlbum(string albumTitle)
+    public async Task<IEnumerable<SongDto>> GetOrderedSongsInCertainAlbum(string albumTitle)
     {
-        return _repositoryInMemorySong.GetAll()
+        var songs = await _repositorySong.GetAll();
+        return songs
            .Where(s => s.AlbumName == albumTitle)
            .OrderBy(s => s.NumberInAlbum)
            .Select(s => new SongDto

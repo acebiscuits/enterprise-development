@@ -24,9 +24,9 @@ public class AlbumService : IAlbumService
     }
 
     /// <inheritdoc />
-    public AlbumDto? GetById(int id)
+    public async Task<AlbumDto?> GetById(int id)
     {
-        var album = _repositoryAlbum.GetById(id);
+        var album = await _repositoryAlbum.GetById(id);
         if (album == null)
         {
             return null;
@@ -42,9 +42,9 @@ public class AlbumService : IAlbumService
     }
 
     /// <inheritdoc />
-    public IEnumerable<AlbumDto> GetAll()
+    public async Task<IEnumerable<AlbumDto>> GetAll()
     {
-        var albums = _repositoryAlbum.GetAll();
+        var albums = await _repositoryAlbum.GetAll();
         return albums.Select(album => new AlbumDto
         {
             Id = album.Id,
@@ -56,9 +56,9 @@ public class AlbumService : IAlbumService
     }
 
     /// <inheritdoc />
-    public void Add(AlbumCreateDto album)
+    public async Task Add(AlbumCreateDto album)
     {
-        _repositoryAlbum.Add(new Album
+        await _repositoryAlbum.Add(new Album
         {
             ArtistId = album.ArtistId,
             Title = album.Title,
@@ -68,9 +68,9 @@ public class AlbumService : IAlbumService
     }
 
     /// <inheritdoc />
-    public void Update(AlbumDto album)
+    public async Task Update(AlbumDto album)
     {
-        var existingAlbum = _repositoryAlbum.GetById(album.Id);
+        var existingAlbum = await _repositoryAlbum.GetById(album.Id);
         if (existingAlbum != null)
         {
             existingAlbum.ArtistId = album.ArtistId ?? existingAlbum.ArtistId;
@@ -81,15 +81,18 @@ public class AlbumService : IAlbumService
     }
 
     /// <inheritdoc />
-    public void Delete(int id)
+    public async Task Delete(int id)
     {
-        _repositoryAlbum.Delete(id);
+        await _repositoryAlbum.Delete(id);
     }
 
     /// <inheritdoc />
-    public IEnumerable<AlbumInfoAndDurationDto> GetInfoAboutAlbumsInCertainYear(int year)
+    public async Task<IEnumerable<AlbumInfoAndDurationDto>> GetInfoAboutAlbumsInCertainYear(int year)
     {
-        return _repositoryAlbum.GetAll()
+
+        var albums = await _repositoryAlbum.GetAll();
+
+        return albums
             .Where(a => a.ReleaseDate == year)
             .Select(a => new AlbumInfoAndDurationDto
             {
@@ -103,33 +106,48 @@ public class AlbumService : IAlbumService
     }
 
     /// <inheritdoc />
-    public IEnumerable<AlbumDto> GetTopFiveAlbumsByDuration()
+    public async Task<IEnumerable<AlbumDto>> GetTopFiveAlbumsByDuration()
     {
-        return _repositorySong.GetAll().GroupBy(s => s.AlbumName)
-              .Select(group => new
-              {
-                  AlbumName = group.Key,
-                  TotalDuration = group.Sum(s => s.Duration.TotalSeconds)
-              })
-              .Where(group => _repositoryAlbum.GetAll().Any(album => album.Title == group.AlbumName))
-              .OrderByDescending(sia => sia.TotalDuration)
-              .Take(5)
-              .Select(album => _repositoryAlbum.GetAll().FirstOrDefault(al => al.Title == album.AlbumName))
-              .Where(album => album != null)
-              .Select(a => new AlbumDto
-              {
-                  ArtistId = a!.ArtistId,
-                  Title = a.Title,
-                  ReleaseDate = a.ReleaseDate,
-                  SongIds = a.SongIds,
-                  Id = a.Id
-              });
+        var songs = await _repositorySong.GetAll();
+        var albums = await _repositoryAlbum.GetAll();
+
+        var albumDurations = songs
+            .Where(s => s.AlbumName != null)
+            .GroupBy(s => s.AlbumName)
+            .Select(group => new
+            {
+                AlbumName = group.Key,
+                TotalDuration = group.Sum(s => s.Duration.TotalSeconds)
+            })
+            .Where(group => albums.Any(album => album.Title == group.AlbumName))
+            .OrderByDescending(group => group.TotalDuration)
+            .Take(5)
+            .ToList();
+
+        return albumDurations
+            .Select(albumDuration =>
+            {
+                var album = albums.FirstOrDefault(al => al.Title == albumDuration.AlbumName);
+                return album != null
+                    ? new AlbumDto
+                    {
+                        ArtistId = album.ArtistId,
+                        Title = album.Title,
+                        ReleaseDate = album.ReleaseDate,
+                        SongIds = album.SongIds,
+                        Id = album.Id
+                    }
+                    : null;
+            })
+            .Where(album => album != null)!;
     }
 
     /// <inheritdoc />
-    public MinAvgMaxDurationDto GetMinAvgMaxAlbumsDuration()
+    public async Task<MinAvgMaxDurationDto> GetMinAvgMaxAlbumsDuration()
     {
-        var durationsByAlbum = _repositorySong.GetAll()
+        var songs = await _repositorySong.GetAll();
+
+        var durationsByAlbum = songs
             .Where(s => s.AlbumName != null && s.Duration.TotalSeconds > 0)
             .GroupBy(s => s.AlbumName)
             .Select(group => new

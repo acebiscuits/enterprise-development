@@ -8,21 +8,21 @@ namespace MediaLibrary.Domain.Services;
 /// </summary>
 public class ArtistService : IArtistService
 {
-    private readonly IRepositoryArtist _repositoryInMemoryArtist;
+    private readonly IRepositoryArtist _repositoryInDBArtist;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ArtistService"/> class.
     /// </summary>
-    /// <param name="repositoryInMemoryArtist">Repository for managing artist data.</param>
-    public ArtistService(IRepositoryArtist repositoryInMemoryArtist)
+    /// <param name="repositoryInDBArtist">Repository for managing artist data.</param>
+    public ArtistService(IRepositoryArtist repositoryInDBArtist)
     {
-        _repositoryInMemoryArtist = repositoryInMemoryArtist;
+        _repositoryInDBArtist = repositoryInDBArtist;
     }
 
     /// <inheritdoc />
-    public ArtistDto? GetById(int id)
+    public async Task<ArtistDto?> GetById(int id)
     {
-        var artist = _repositoryInMemoryArtist.GetById(id);
+        var artist = await _repositoryInDBArtist.GetById(id);
         if (artist == null)
         {
             return null;
@@ -39,9 +39,9 @@ public class ArtistService : IArtistService
     }
 
     /// <inheritdoc />
-    public IEnumerable<ArtistDto> GetAll()
+    public async Task<IEnumerable<ArtistDto>> GetAll()
     {
-        var artists = _repositoryInMemoryArtist.GetAll();
+        var artists = await _repositoryInDBArtist.GetAll();
         return artists.Select(artist => new ArtistDto
         {
             Id = artist.Id,
@@ -53,9 +53,9 @@ public class ArtistService : IArtistService
     }
 
     /// <inheritdoc />
-    public void Add(ArtistCreateDto artist)
+    public async Task Add(ArtistCreateDto artist)
     {
-        _repositoryInMemoryArtist.Add(new Artist
+        await _repositoryInDBArtist.Add(new Artist
         {
             Name = artist.Name,
             Description = artist.Description,
@@ -65,9 +65,9 @@ public class ArtistService : IArtistService
     }
 
     /// <inheritdoc />
-    public void Update(ArtistDto artist)
+    public async Task Update(ArtistDto artist)
     {
-        var existingArtist = _repositoryInMemoryArtist.GetById(artist.Id);
+        var existingArtist = await _repositoryInDBArtist.GetById(artist.Id);
         if (existingArtist != null)
         {
             existingArtist.Name = artist.Name;
@@ -78,17 +78,20 @@ public class ArtistService : IArtistService
     }
 
     /// <inheritdoc />
-    public void Delete(int id)
+    public async Task Delete(int id)
     {
-        _repositoryInMemoryArtist.Delete(id);
+        await _repositoryInDBArtist.Delete(id);
     }
 
     /// <inheritdoc />
-    public IEnumerable<ArtistDto> GetMaxAlbumsCountArtists()
+    public async Task<IEnumerable<ArtistDto>> GetMaxAlbumsCountArtists()
     {
-        return _repositoryInMemoryArtist
-            .GetAll()
-            .Where(a => a.AlbumIds.Count == _repositoryInMemoryArtist.GetAll().Max(a => a.AlbumIds.Count))
+        var artists = await _repositoryInDBArtist.GetAll();
+        var maxAlbumCount = artists.Max(a => a.AlbumIds.Count);
+
+        // Фильтрация и преобразование в ArtistDto
+        return artists
+            .Where(a => a.AlbumIds.Count == maxAlbumCount)
             .Select(artist => new ArtistDto
             {
                 Id = artist.Id,
