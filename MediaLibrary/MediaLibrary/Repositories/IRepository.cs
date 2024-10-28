@@ -12,26 +12,26 @@ public interface IRepository<T> where T : class, IEntity
     /// Adds a new entity to the in-memory collection.
     /// </summary>
     /// <param name="entity">The entity to be added.</param>
-    public void Add(T entity);
+    public Task Add(T entity);
     /// <summary>
     /// Updates an existing entity in the in-memory collection.
     /// </summary>
     /// <param name="entity">The entity with updated information.</param>
-    public void Update(T entity);
+    public Task Update(T entity);
     /// <summary>
     /// Deletes an entity from the in-memory collection by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the entity to be deleted.</param>
-    public void Delete(int id);
+    public Task Delete(int id);
     /// <summary>
     /// Retrieves an entity by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the entity to retrieve.</param>
     /// <returns>The entity with the given identifier, or null if not found.</returns>
-    public T? GetById(int id);
+    public Task<T?> GetById(int id);
     /// <summary>
     /// Retrieves all entities in the in-memory collection.
     /// </summary>
     /// <returns>An enumerable collection of all entities.</returns>
-    public IEnumerable<T> GetAll();
+    public Task<IEnumerable<T>> GetAll();
 }
