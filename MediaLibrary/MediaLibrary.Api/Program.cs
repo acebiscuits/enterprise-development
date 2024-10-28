@@ -1,3 +1,4 @@
+using DotNetEnv;
 using MediaLibrary.Api.Config;
 using System.Reflection;
 
@@ -36,6 +37,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-
+Env.Load();
 
 app.Run();

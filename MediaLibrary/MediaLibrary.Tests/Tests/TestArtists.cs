@@ -13,9 +13,9 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
     /// Tests the selection and output info about every artist
     /// </summary>
     [Fact]
-    public void TestShowInfoAboutAllArtists()
+    public async Task TestShowInfoAboutAllArtists()
     {
-        var artists = _fixture.ArtistService.GetAll().ToList();
+        var artists = (await _fixture.ArtistService.GetAll()).ToList();
 
         Assert.Equal(7, artists.Count);
 
@@ -49,9 +49,12 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
     /// Tests selection the info about every song in certain album, ordered by number
     /// </summary>
     [Fact]
-    public void TestAllSongsInAlbumOrderedByNumber()
+    public async Task TestAllSongsInAlbumOrderedByNumber()
     {
-        var songs = _fixture.SongService.GetAll().Where(a => a.AlbumName == "Stronger").OrderBy(a => a.NumberInAlbum).ToList();
+        var songs = (await _fixture.SongService.GetAll())
+            .Where(a => a.AlbumName == "Stronger")
+            .OrderBy(a => a.NumberInAlbum)
+            .ToList();
 
         Assert.Equal(6, songs.Count);
 
@@ -73,77 +76,75 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
     /// Tests the selection albums in specific year, noticing a number of songs
     /// </summary>
     [Fact]
-    public void TestAlbumsInfoWithSongsCountInCertainYear()
+    public async Task TestAlbumsInfoWithSongsCountInCertainYear()
     {
-        var query = _fixture.AlbumService.GetAll().Where(q => q.ReleaseDate == 1980).ToList();
+        var albums = (await _fixture.AlbumService.GetAll())
+            .Where(q => q.ReleaseDate == 1980)
+            .ToList();
 
-        Assert.Equal(2, query.Count);
+        Assert.Equal(2, albums.Count);
 
         Assert.Equal(["Against The Wind", "Nine Tonight"],
-            query.Select(q => q.Title).ToList());
+            albums.Select(q => q.Title).ToList());
 
         Assert.Equal([2, 3],
-            query.Select(q => q.ArtistId).ToList());
+            albums.Select(q => q.ArtistId).ToList());
 
         Assert.Equal([4, 4],
-            query.Select(q => q.SongIds.Count).ToList());
+            albums.Select(q => q.SongIds.Count).ToList());
     }
 
     /// <summary>
     /// Tests the selection top 5 albums by duration
     /// </summary>
     [Fact]
-    public void TestTopFiveAlbumsByDuration()
+    public async Task TestTopFiveAlbumsByDuration()
     {
-        var query = _fixture.SongsForTopFiveAlbumsRepository.GetAll().GroupBy(q => q.AlbumName)
-            .Select(a => new { AlbumName = a.Key, TotalDuration = a.Aggregate(TimeSpan.Zero, (total, song) => total + song.Duration) })
-            .OrderByDescending(d => d.TotalDuration).Take(5).ToList();
+        var albums = (await _fixture.SongService.GetAll())
+            .GroupBy(s => s.AlbumName)
+            .Select(group => new { AlbumName = group.Key, TotalDuration = group.Sum(s => s.Duration.HasValue ? s.Duration.Value.TotalSeconds : 0) })
+            .OrderByDescending(album => album.TotalDuration)
+            .Take(5)
+            .ToList();
 
-        Assert.Equal([ TimeSpan.FromSeconds(108), TimeSpan.FromSeconds(107),
-                       TimeSpan.FromSeconds(106), TimeSpan.FromSeconds(105),
-                       TimeSpan.FromSeconds(104) ],
-                     query.Select(d => d.TotalDuration).ToList());
+        Assert.Equal([ 1541.0, 723.0, 700.0, 496.0, 264.0],
+                     albums.Select(d => d.TotalDuration).ToList());
     }
 
     /// <summary>
     /// Tests the selection artists with a max number of albums
     /// </summary>
     [Fact]
-    public void TestArtistsWithMaxAlbumsCount()
+    public async Task TestArtistsWithMaxAlbumsCount()
     {
-        var query = _fixture.ArtistService
-        .GetAll()
-        .Where(a => a.AlbumIds.Count == _fixture.InfoAboutAllArtistsAndWithMaxAlbumsRepository.GetAll().Max(a => a.AlbumIds.Count))
-        .Select(group => new
-        {
-            Id = group.Id,
-            Count = group.AlbumIds.Count,
-        }).ToList();
-        var maxAlbumCount = _fixture.InfoAboutAllArtistsAndWithMaxAlbumsRepository
-        .GetAll()
-        .Max(a => a.AlbumIds.Count);
+        var maxAlbumCount = (await _fixture.ArtistService.GetAll())
+            .Max(a => a.AlbumIds.Count);
 
-        Assert.Equal([1, 2, 4, 6, 7], query!.Select(q => q.Id).ToList());
-        Assert.All(query, q => Assert.Equal(maxAlbumCount, q.Count));
+        var artists = (await _fixture.ArtistService.GetAll())
+            .Where(a => a.AlbumIds.Count == maxAlbumCount)
+            .ToList();
+
+        Assert.Equal([1, 2, 4, 6, 7], artists!.Select(q => q.Id).ToList());
+        Assert.All(artists, q => Assert.Equal(maxAlbumCount, q.AlbumIds.Count));
     }
 
     /// <summary>
     /// Tests the selection of max, min, avg duration of albums
     /// </summary>
     [Fact]
-    public void TestMaxMinMedAlbumsDurationInfo()
+    public async Task TestMaxMinMedAlbumsDurationInfo()
     {
-        var query = _fixture.MaxMinMedAlbumsDurationInfoService.GetAll().GroupBy(n => n.AlbumName)
-            .Select(g => new { AlbumName = g.Key, TotalDuration = g.Sum(s => s.Duration.HasValue ? s.Duration.Value.TotalSeconds : 0) })
-            .OrderByDescending(d => d.TotalDuration)
+        var albums = (await _fixture.SongService.GetAll())
+            .GroupBy(s => s.AlbumName)
+            .Select(group => new { AlbumName = group.Key, TotalDuration = group.Sum(s => s.Duration.HasValue ? s.Duration.Value.TotalSeconds : 0) })
             .ToList();
 
         var minDuration = 264;
-        var maxDuration = 723;
-        var avgDuration = 545.75;
+        var maxDuration = 1541;
+        var avgDuration = 744.8;
 
-        Assert.Equal(maxDuration, query.Max(a => a.TotalDuration));
-        Assert.Equal(minDuration, query.Min(a => a.TotalDuration));
-        Assert.Equal(avgDuration, query.Average(a => a.TotalDuration));
+        Assert.Equal(maxDuration, albums.Max(a => a.TotalDuration));
+        Assert.Equal(minDuration, albums.Min(a => a.TotalDuration));
+        Assert.Equal(avgDuration, albums.Average(a => a.TotalDuration));
     }
 }

@@ -1,6 +1,9 @@
-﻿using MediaLibrary.Domain.Models;
+﻿using MediaLibrary.Domain.Data;
+using MediaLibrary.Domain.Models;
 using MediaLibrary.Domain.Repositories;
 using MediaLibrary.Domain.Services;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace MediaLibrary.Api.Config;
 
@@ -21,16 +24,15 @@ public static class DependencyInjection
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<ISongService, SongService>();
 
-        services.AddScoped(typeof(IRepository<>), typeof(RepositoryInMemory<>));
-        services.AddSingleton<IRepositoryArtist, RepositoryInMemoryArtist>();
-        services.AddSingleton<IRepositoryAlbum, RepositoryInMemoryAlbum>();
-        services.AddSingleton<IRepositoryGenre, RepositoryInMemoryGenre>();
-        services.AddSingleton<IRepositorySong, RepositoryInMemorySong>();
+        services.AddScoped(typeof(IRepository<>), typeof(RepositoryInDB<>));
+        services.AddScoped<IRepositoryArtist, RepositoryInDBArtist>();
+        services.AddScoped<IRepositoryAlbum, RepositoryInDBAlbum>();
+        services.AddScoped<IRepositoryGenre, RepositoryInDBGenre>();
+        services.AddScoped<IRepositorySong, RepositoryInDBSong>();
 
-        services.AddSingleton(new List<Artist>());
-        services.AddSingleton(new List<Album>());
-        services.AddSingleton(new List<Genre>());
-        services.AddSingleton(new List<Song>());
+        services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseMySql(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"),
+                new MySqlServerVersion(new Version(8, 0, 32))), ServiceLifetime.Singleton);
 
         return services;
     }
