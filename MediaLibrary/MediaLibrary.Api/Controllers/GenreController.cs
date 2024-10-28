@@ -28,9 +28,10 @@ public class GenreController : ControllerBase
     /// </summary>
     /// <returns>A list of genre DTOs.</returns>
     [HttpGet]
-    public ActionResult<IEnumerable<GenreDto>> GetAll()
+    public async Task<ActionResult<IEnumerable<GenreDto>>> GetAll()
     {
-        return Ok(_genreService.GetAll());
+        var genres = await _genreService.GetAll();
+        return Ok(genres);
     }
 
     /// <summary>
@@ -39,9 +40,9 @@ public class GenreController : ControllerBase
     /// <param name="id">The ID of the genre to retrieve.</param>
     /// <returns>The genre DTO if found; otherwise, NotFound.</returns>
     [HttpGet("{id:int}")]
-    public ActionResult<GenreDto> GetById(int id)
+    public async Task<ActionResult<GenreDto>> GetById(int id)
     {
-        var genre = _genreService.GetById(id);
+        var genre = await _genreService.GetById(id);
         if (genre == null)
         {
             return NotFound();
@@ -55,13 +56,13 @@ public class GenreController : ControllerBase
     /// <param name="genreCreateDto">The genre data to create.</param>
     /// <returns>OK if successful.</returns>
     [HttpPost]
-    public ActionResult Add([FromBody] GenreCreateDto genreCreateDto)
+    public async Task<ActionResult> Add([FromBody] GenreCreateDto genreCreateDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-        _genreService.Add(genreCreateDto);
+        await _genreService.Add(genreCreateDto);
         return Ok();
     }
 
@@ -71,19 +72,19 @@ public class GenreController : ControllerBase
     /// <param name="genreDto">The updated genre data.</param>
     /// <returns>NoContent if successful.</returns>
     [HttpPut]
-    public ActionResult Update([FromBody] GenreDto genreDto)
+    public async Task<ActionResult> Update([FromBody] GenreDto genreDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-        var existingGenre = _genreService.GetById(genreDto.Id);
+        var existingGenre = await _genreService.GetById(genreDto.Id);
         if (existingGenre == null)
         {
             return NotFound();
         }
 
-        _genreService.Update(genreDto);
+        await _genreService.Update(genreDto);
         return NoContent();
     }
 
@@ -93,14 +94,14 @@ public class GenreController : ControllerBase
     /// <param name="id">The ID of the genre to delete.</param>
     /// <returns>NoContent if successful; otherwise, NotFound.</returns>
     [HttpDelete("{id:int}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        var existingGenre = _genreService.GetById(id);
+        var existingGenre = await _genreService.GetById(id);
         if (existingGenre == null)
         {
             return NotFound();
         }
-        _genreService.Delete(id);
+        await _genreService.Delete(id);
         return NoContent();
     }
 }

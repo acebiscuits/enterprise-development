@@ -28,9 +28,10 @@ public class AlbumController : ControllerBase
     /// </summary>
     /// <returns>A list of album DTOs.</returns>
     [HttpGet]
-    public ActionResult<IEnumerable<AlbumDto>> GetAll()
+    public async Task<ActionResult<IEnumerable<AlbumDto>>> GetAll()
     {
-        return Ok(_albumService.GetAll());
+        var albums = await _albumService.GetAll();
+        return Ok(albums);
     }
 
     /// <summary>
@@ -39,9 +40,9 @@ public class AlbumController : ControllerBase
     /// <param name="id">The ID of the album to retrieve.</param>
     /// <returns>The album DTO if found; otherwise, NotFound.</returns>
     [HttpGet("{id:int}")]
-    public ActionResult<AlbumDto> GetById(int id)
+    public async Task<ActionResult<AlbumDto>> GetById(int id)
     {
-        var album = _albumService.GetById(id);
+        var album = await _albumService.GetById(id);
         if (album == null)
         {
             return NotFound();
@@ -55,13 +56,13 @@ public class AlbumController : ControllerBase
     /// <param name="albumCreateDto">The album data to create.</param>
     /// <returns>OK if successful.</returns>
     [HttpPost]
-    public ActionResult Add([FromBody] AlbumCreateDto albumCreateDto)
+    public async Task<ActionResult> Add([FromBody] AlbumCreateDto albumCreateDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-        _albumService.Add(albumCreateDto);
+        await _albumService.Add(albumCreateDto);
         return Ok();
     }
 
@@ -71,20 +72,20 @@ public class AlbumController : ControllerBase
     /// <param name="albumDto">The updated album data.</param>
     /// <returns>NoContent if successful.</returns>
     [HttpPut]
-    public ActionResult Update([FromBody] AlbumDto albumDto)
+    public async Task<ActionResult> Update([FromBody] AlbumDto albumDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var existingAlbum = _albumService.GetById(albumDto.Id);
+        var existingAlbum = await _albumService.GetById(albumDto.Id);
 
         if (existingAlbum == null)
         {
             return NotFound();
         }
-        _albumService.Update(albumDto);
+        await _albumService.Update(albumDto);
         return NoContent();
     }
 
@@ -94,14 +95,14 @@ public class AlbumController : ControllerBase
     /// <param name="id">The ID of the album to delete.</param>
     /// <returns>NoContent if successful; otherwise, NotFound.</returns>
     [HttpDelete("{id:int}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        var existingAlbum = _albumService.GetById(id);
+        var existingAlbum = await _albumService.GetById(id);
         if (existingAlbum == null)
         {
             return NotFound();
         }
-        _albumService.Delete(id);
+        await _albumService.Delete(id);
         return NoContent();
     }
 
@@ -111,9 +112,9 @@ public class AlbumController : ControllerBase
     /// <param name="year">The year of the album release.</param>
     /// <returns>A list of albums with additional information for the specified year, or NotFound if no albums are found.</returns>
     [HttpGet("year/{year:int}")]
-    public ActionResult<IEnumerable<AlbumInfoAndDurationDto>> GetInfoAboutAlbumsInCertainYear(int year)
+    public async Task<ActionResult<IEnumerable<AlbumInfoAndDurationDto>>> GetInfoAboutAlbumsInCertainYear(int year)
     {
-        var albumsInfo = _albumService.GetInfoAboutAlbumsInCertainYear(year);
+        var albumsInfo = await _albumService.GetInfoAboutAlbumsInCertainYear(year);
         return Ok(albumsInfo);
     }
 
@@ -122,9 +123,9 @@ public class AlbumController : ControllerBase
     /// </summary>
     /// <returns>A list of the top five albums by duration, or NotFound if no albums are found.</returns>
     [HttpGet("top-five-by-duration")]
-    public ActionResult<IEnumerable<AlbumDto>> GetTopFiveAlbumsByDuration()
+    public async Task<ActionResult<IEnumerable<AlbumDto>>> GetTopFiveAlbumsByDuration()
     {
-        var albums = _albumService.GetTopFiveAlbumsByDuration();
+        var albums = await _albumService.GetTopFiveAlbumsByDuration();
         return Ok(albums);
     }
 
@@ -133,9 +134,9 @@ public class AlbumController : ControllerBase
     /// </summary>
     /// <returns>A DTO with min, avg, and max album durations, or NotFound if no data is available.</returns>
     [HttpGet("min-avg-max-duration")]
-    public ActionResult<IEnumerable<MinAvgMaxDurationDto>> GetMinAvgMaxAlbumsDuration()
+    public async Task<ActionResult<IEnumerable<MinAvgMaxDurationDto>>> GetMinAvgMaxAlbumsDuration()
     {
-        var durations = _albumService.GetMinAvgMaxAlbumsDuration();
+        var durations = await _albumService.GetMinAvgMaxAlbumsDuration();
         return Ok(durations);
     }
 }
