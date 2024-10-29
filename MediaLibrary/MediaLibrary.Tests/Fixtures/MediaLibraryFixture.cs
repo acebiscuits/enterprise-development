@@ -3,8 +3,6 @@ using MediaLibrary.Domain.Models;
 using MediaLibrary.Domain.Repositories;
 using MediaLibrary.Domain.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Xml.Linq;
-
 namespace MediaLibrary.Tests.Fixtures;
 
 /// <summary>

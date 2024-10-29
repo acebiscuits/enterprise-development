@@ -107,7 +107,7 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
             .Take(5)
             .ToList();
 
-        Assert.Equal([ 1541.0, 723.0, 700.0, 496.0, 264.0],
+        Assert.Equal([1541.0, 723.0, 700.0, 496.0, 264.0],
                      albums.Select(d => d.TotalDuration).ToList());
     }
 

@@ -1,5 +1,4 @@
 ﻿using MediaLibrary.Domain.Data;
-using MediaLibrary.Domain.Models;
 using MediaLibrary.Domain.Repositories;
 using MediaLibrary.Domain.Services;
 using Microsoft.EntityFrameworkCore;
