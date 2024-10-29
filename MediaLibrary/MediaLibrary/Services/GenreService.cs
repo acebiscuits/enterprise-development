@@ -59,11 +59,15 @@ public class GenreService : IGenreService
     /// <inheritdoc />
     public async Task Update(GenreDto genreDto)
     {
-        var genre = await _repositoryGenre.GetById(genreDto.Id);
-        if (genre != null)
+        var existingGenre = await _repositoryGenre.GetById(genreDto.Id);
+        if (existingGenre != null)
         {
-            genre.ArtistIds = genreDto.ArtistIds;
-            genre.Title = genreDto.Title ?? genre.Title;
+            await _repositoryGenre.Update(new Genre
+            {
+                Id = genreDto.Id,
+                ArtistIds = genreDto.ArtistIds,
+                Title = genreDto.Title ?? existingGenre.Title
+            });
         }
     }
     /// <inheritdoc />

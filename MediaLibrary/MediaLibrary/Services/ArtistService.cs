@@ -65,15 +65,19 @@ public class ArtistService : IArtistService
     }
 
     /// <inheritdoc />
-    public async Task Update(ArtistDto artist)
+    public async Task Update(ArtistDto artistDto)
     {
-        var existingArtist = await _repositoryInDBArtist.GetById(artist.Id);
+        var existingArtist = await _repositoryInDBArtist.GetById(artistDto.Id);
         if (existingArtist != null)
         {
-            existingArtist.Name = artist.Name;
-            existingArtist.AlbumIds = artist.AlbumIds;
-            existingArtist.GenreIds = artist.GenreIds;
-            existingArtist.Description = artist.Description ?? existingArtist.Description;
+            await _repositoryInDBArtist.Update(new Artist
+            {
+                Id = artistDto.Id,
+                Name = artistDto.Name,
+                AlbumIds = artistDto.AlbumIds,
+                GenreIds = artistDto.GenreIds,
+                Description = artistDto.Description ?? existingArtist.Description
+            });
         }
     }
 

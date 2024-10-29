@@ -68,15 +68,19 @@ public class AlbumService : IAlbumService
     }
 
     /// <inheritdoc />
-    public async Task Update(AlbumDto album)
+    public async Task Update(AlbumDto albumDto)
     {
-        var existingAlbum = await _repositoryAlbum.GetById(album.Id);
+        var existingAlbum = await _repositoryAlbum.GetById(albumDto.Id);
         if (existingAlbum != null)
         {
-            existingAlbum.ArtistId = album.ArtistId ?? existingAlbum.ArtistId;
-            existingAlbum.Title = album.Title ?? existingAlbum.Title;
-            existingAlbum.ReleaseDate = album.ReleaseDate ?? existingAlbum.ReleaseDate;
-            existingAlbum.SongIds = album.SongIds;
+            await _repositoryAlbum.Update(new Album
+            {
+                Id = albumDto.Id,
+                ArtistId = albumDto.ArtistId ?? existingAlbum.ArtistId,
+                ReleaseDate = albumDto.ReleaseDate ?? existingAlbum.ReleaseDate,
+                SongIds = albumDto.SongIds,
+                Title = albumDto.Title ?? existingAlbum.Title
+            });
         }
     }
 
