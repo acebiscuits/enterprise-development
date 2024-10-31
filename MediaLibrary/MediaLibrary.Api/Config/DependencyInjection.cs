@@ -3,7 +3,6 @@ using MediaLibrary.Domain.Repositories;
 using MediaLibrary.Domain.Services;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace MediaLibrary.Api.Config;
 
 /// <summary>
@@ -23,15 +22,11 @@ public static class DependencyInjection
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<ISongService, SongService>();
 
-        services.AddScoped(typeof(IRepository<>), typeof(RepositoryInDB<>));
-        services.AddScoped<IRepositoryArtist, RepositoryInDBArtist>();
-        services.AddScoped<IRepositoryAlbum, RepositoryInDBAlbum>();
-        services.AddScoped<IRepositoryGenre, RepositoryInDBGenre>();
-        services.AddScoped<IRepositorySong, RepositoryInDBSong>();
-
-        services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseMySql(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"),
-                new MySqlServerVersion(new Version(8, 0, 32))), ServiceLifetime.Singleton);
+        services.AddScoped(typeof(IRepository<>), typeof(RepositoryInDb<>));
+        services.AddScoped<IRepositoryArtist, RepositoryInDbArtist>();
+        services.AddScoped<IRepositoryAlbum, RepositoryInDbAlbum>();
+        services.AddScoped<IRepositoryGenre, RepositoryInDbGenre>();
+        services.AddScoped<IRepositorySong, RepositoryInDbSong>();
 
         return services;
     }

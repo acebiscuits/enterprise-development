@@ -1,17 +1,10 @@
 ﻿using MediaLibrary.Tests.Fixtures;
 namespace MediaLibrary.Tests.Tests;
 
-/// <summary>
-/// This class contains unit tests for testing various operations related to artists, genres, albums and songs.
-/// </summary>
-/// <param name="fixture">Fixture to provide data for testing.</param>
 public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibraryFixture>
 {
     private MediaLibraryFixture _fixture = fixture;
 
-    /// <summary>
-    /// Tests the selection and output info about every artist
-    /// </summary>
     [Fact]
     public async Task TestShowInfoAboutAllArtists()
     {
@@ -45,9 +38,6 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
 
     }
 
-    /// <summary>
-    /// Tests selection the info about every song in certain album, ordered by number
-    /// </summary>
     [Fact]
     public async Task TestAllSongsInAlbumOrderedByNumber()
     {
@@ -72,9 +62,6 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
 
     }
 
-    /// <summary>
-    /// Tests the selection albums in specific year, noticing a number of songs
-    /// </summary>
     [Fact]
     public async Task TestAlbumsInfoWithSongsCountInCertainYear()
     {
@@ -94,9 +81,6 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
             albums.Select(q => q.SongIds.Count).ToList());
     }
 
-    /// <summary>
-    /// Tests the selection top 5 albums by duration
-    /// </summary>
     [Fact]
     public async Task TestTopFiveAlbumsByDuration()
     {
@@ -111,9 +95,6 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
                      albums.Select(d => d.TotalDuration).ToList());
     }
 
-    /// <summary>
-    /// Tests the selection artists with a max number of albums
-    /// </summary>
     [Fact]
     public async Task TestArtistsWithMaxAlbumsCount()
     {
@@ -128,9 +109,6 @@ public class TestArtists(MediaLibraryFixture fixture) : IClassFixture<MediaLibra
         Assert.All(artists, q => Assert.Equal(maxAlbumCount, q.AlbumIds.Count));
     }
 
-    /// <summary>
-    /// Tests the selection of max, min, avg duration of albums
-    /// </summary>
     [Fact]
     public async Task TestMaxMinMedAlbumsDurationInfo()
     {

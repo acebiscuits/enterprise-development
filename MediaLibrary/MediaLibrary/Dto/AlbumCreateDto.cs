@@ -2,7 +2,6 @@
 
 namespace MediaLibrary.Domain.Dto;
 
-
 /// <summary>
 /// DTO for creating a new album in the media library.
 /// </summary>

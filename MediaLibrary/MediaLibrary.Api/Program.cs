@@ -1,10 +1,28 @@
 using DotNetEnv;
 using MediaLibrary.Api.Config;
+using MediaLibrary.Domain.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+Env.Load();
+
+var connectionString =(builder.Configuration.GetConnectionString("DefaultConnection") ?? "")
+    .Replace("{DB_SERVER}", Environment.GetEnvironmentVariable("DB_SERVER"))
+    .Replace("{DB_NAME}", Environment.GetEnvironmentVariable("DB_NAME"))
+    .Replace("{DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
+    .Replace("{DB_PASSWORD}", Environment.GetEnvironmentVariable("DB_PASSWORD"));
+
+builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(
+        connectionString,
+        new MySqlServerVersion(new Version(8, 0, 32)),
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure()
+    )
+);
 
 builder.Services.AddControllers();
 
@@ -13,7 +31,6 @@ builder.Services.AddApplicationServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    // Настройка Swagger для использования XML-комментариев
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     options.IncludeXmlComments(xmlPath);
@@ -36,7 +53,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-Env.Load();
 
 app.Run();

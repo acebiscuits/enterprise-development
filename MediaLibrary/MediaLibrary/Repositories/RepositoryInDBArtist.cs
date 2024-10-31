@@ -4,13 +4,13 @@ using MediaLibrary.Domain.Models;
 namespace MediaLibrary.Domain.Repositories;
 
 /// <summary>
-/// Repository for handling database operations for Artist entities, inheriting from the generic RepositoryInDB.
+/// Repository for handling database operations for Artist entities, inheriting from the generic RepositoryInDb.
 /// </summary>
-public class RepositoryInDBArtist : RepositoryInDB<Artist>, IRepositoryArtist
+public class RepositoryInDbArtist : RepositoryInDb<Artist>, IRepositoryArtist
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="RepositoryInDBArtist"/> class.
+    /// Initializes a new instance of the <see cref="RepositoryInDbArtist"/> class.
     /// </summary>
     /// <param name="context">The database context used for data operations.</param>
-    public RepositoryInDBArtist(ApplicationDbContext context) : base(context) { }
+    public RepositoryInDbArtist(ApplicationDbContext context) : base(context) { }
 }

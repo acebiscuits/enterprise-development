@@ -8,21 +8,21 @@ namespace MediaLibrary.Domain.Services;
 /// </summary>
 public class ArtistService : IArtistService
 {
-    private readonly IRepositoryArtist _repositoryInDBArtist;
+    private readonly IRepositoryArtist _repositoryArtist;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ArtistService"/> class.
     /// </summary>
-    /// <param name="repositoryInDBArtist">Repository for managing artist data.</param>
-    public ArtistService(IRepositoryArtist repositoryInDBArtist)
+    /// <param name="repositoryArtist">Repository for managing artist data.</param>
+    public ArtistService(IRepositoryArtist repositoryArtist)
     {
-        _repositoryInDBArtist = repositoryInDBArtist;
+        _repositoryArtist = repositoryArtist;
     }
 
     /// <inheritdoc />
     public async Task<ArtistDto?> GetById(int id)
     {
-        var artist = await _repositoryInDBArtist.GetById(id);
+        var artist = await _repositoryArtist.GetById(id);
         if (artist == null)
         {
             return null;
@@ -41,7 +41,7 @@ public class ArtistService : IArtistService
     /// <inheritdoc />
     public async Task<IEnumerable<ArtistDto>> GetAll()
     {
-        var artists = await _repositoryInDBArtist.GetAll();
+        var artists = await _repositoryArtist.GetAll();
         return artists.Select(artist => new ArtistDto
         {
             Id = artist.Id,
@@ -55,7 +55,7 @@ public class ArtistService : IArtistService
     /// <inheritdoc />
     public async Task Add(ArtistCreateDto artist)
     {
-        await _repositoryInDBArtist.Add(new Artist
+        await _repositoryArtist.Add(new Artist
         {
             Name = artist.Name,
             Description = artist.Description,
@@ -67,10 +67,10 @@ public class ArtistService : IArtistService
     /// <inheritdoc />
     public async Task Update(ArtistDto artistDto)
     {
-        var existingArtist = await _repositoryInDBArtist.GetById(artistDto.Id);
+        var existingArtist = await _repositoryArtist.GetById(artistDto.Id);
         if (existingArtist != null)
         {
-            await _repositoryInDBArtist.Update(new Artist
+            await _repositoryArtist.Update(new Artist
             {
                 Id = artistDto.Id,
                 Name = artistDto.Name,
@@ -84,13 +84,13 @@ public class ArtistService : IArtistService
     /// <inheritdoc />
     public async Task Delete(int id)
     {
-        await _repositoryInDBArtist.Delete(id);
+        await _repositoryArtist.Delete(id);
     }
 
     /// <inheritdoc />
     public async Task<IEnumerable<ArtistDto>> GetMaxAlbumsCountArtists()
     {
-        var artists = await _repositoryInDBArtist.GetAll();
+        var artists = await _repositoryArtist.GetAll();
         var maxAlbumCount = artists.Max(a => a.AlbumIds.Count);
 
         // Фильтрация и преобразование в ArtistDto

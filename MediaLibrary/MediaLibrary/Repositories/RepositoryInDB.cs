@@ -8,16 +8,16 @@ namespace MediaLibrary.Domain.Repositories;
 /// Generic repository for performing CRUD operations on database entities of type <typeparamref name="T"/>.
 /// </summary>
 /// <typeparam name="T">The type of entity, must implement IEntity.</typeparam>
-public class RepositoryInDB<T> : IRepository<T> where T : class, IEntity
+public class RepositoryInDb<T> : IRepository<T> where T : class, IEntity
 {
     private readonly ApplicationDbContext _context;
     private readonly DbSet<T> _dbSet;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RepositoryInDB{T}"/> class.
+    /// Initializes a new instance of the <see cref="RepositoryInDb{T}"/> class.
     /// </summary>
     /// <param name="context">The database context used for data operations.</param>
-    public RepositoryInDB(ApplicationDbContext context)
+    public RepositoryInDb(ApplicationDbContext context)
     {
         _context = context;
         _dbSet = context.Set<T>();
