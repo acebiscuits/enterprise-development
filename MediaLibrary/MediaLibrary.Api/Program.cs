@@ -14,8 +14,6 @@ var connectionString =(builder.Configuration.GetConnectionString("DefaultConnect
     .Replace("{DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
     .Replace("{DB_PASSWORD}", Environment.GetEnvironmentVariable("DB_PASSWORD"));
 
-builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         connectionString,
