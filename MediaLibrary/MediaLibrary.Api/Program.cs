@@ -7,20 +7,10 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 Env.Load();
-
-var connectionString =(builder.Configuration.GetConnectionString("DefaultConnection") ?? "")
-    .Replace("{DB_SERVER}", Environment.GetEnvironmentVariable("DB_SERVER"))
-    .Replace("{DB_NAME}", Environment.GetEnvironmentVariable("DB_NAME"))
-    .Replace("{DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
-    .Replace("{DB_PASSWORD}", Environment.GetEnvironmentVariable("DB_PASSWORD"));
-
+builder.Configuration.AddEnvironmentVariables();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        connectionString,
-        new MySqlServerVersion(new Version(8, 0, 32)),
-        mySqlOptions => mySqlOptions.EnableRetryOnFailure()
-    )
-);
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 23))));
 
 builder.Services.AddControllers();
 

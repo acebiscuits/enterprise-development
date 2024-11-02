@@ -32,8 +32,8 @@ public class MediaLibraryFixture : IDisposable
     private void SeedData()
     {
         _context.Artists.AddRange(
-            new Artist { Name = "Jon Bon Jovi", Description = "У него есть кожаная куртка с дюжиной застежек", AlbumIds = [ 1, 2 ], GenreIds = [ 1, 2 ] },
-            new Artist { Name = "Bob Seger", Description = "Его не заткнуть, а его смех похож на скрежет бетономешалки", AlbumIds = [ 3, 4 ], GenreIds = [ 3 ] },
+            new Artist { Name = "Jon Bon Jovi", Description = "У него есть кожаная куртка с дюжиной застежек", AlbumIds = [1, 2], GenreIds = [1, 2] },
+            new Artist { Name = "Bob Seger", Description = "Его не заткнуть, а его смех похож на скрежет бетономешалки", AlbumIds = [3, 4], GenreIds = [3] },
             new Artist { Name = "Jay Kay", Description = "Он как-то говорил, что не смог бы стать раллийным гонщиком", AlbumIds = [5], GenreIds = [4] },
             new Artist { Name = "Roger Daltrey", Description = "Самый быстрый человек с билетом на автобус", AlbumIds = [6, 7], GenreIds = [3] },
             new Artist { Name = "Lionel Richie", Description = "Он часто оказывался на обочине и пытался открыть правую дверь", AlbumIds = [8], GenreIds = [4] },

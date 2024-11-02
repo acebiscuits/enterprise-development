@@ -1,7 +1,5 @@
-﻿using MediaLibrary.Domain.Data;
-using MediaLibrary.Domain.Repositories;
+﻿using MediaLibrary.Domain.Repositories;
 using MediaLibrary.Domain.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace MediaLibrary.Api.Config;
 
