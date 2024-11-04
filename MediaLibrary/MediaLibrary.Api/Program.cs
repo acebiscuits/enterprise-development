@@ -1,4 +1,3 @@
-using DotNetEnv;
 using MediaLibrary.Api.Config;
 using MediaLibrary.Domain.Data;
 using Microsoft.EntityFrameworkCore;
@@ -6,11 +5,9 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Env.Load();
-builder.Configuration.AddEnvironmentVariables();
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 23))));
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), 
+                     new MySqlServerVersion(new Version(8, 0, 23))));
 
 builder.Services.AddControllers();
 
