@@ -70,14 +70,11 @@ public class ArtistService : IArtistService
         var existingArtist = await _repositoryArtist.GetById(artistDto.Id);
         if (existingArtist != null)
         {
-            await _repositoryArtist.Update(new Artist
-            {
-                Id = artistDto.Id,
-                Name = artistDto.Name,
-                AlbumIds = artistDto.AlbumIds,
-                GenreIds = artistDto.GenreIds,
-                Description = artistDto.Description ?? existingArtist.Description
-            });
+            existingArtist.Name = artistDto.Name;
+            existingArtist.AlbumIds = artistDto.AlbumIds;
+            existingArtist.GenreIds = artistDto.GenreIds;
+            existingArtist.Description = artistDto.Description ?? existingArtist.Description;
+            await _repositoryArtist.Update(existingArtist);
         }
     }
 
@@ -93,7 +90,6 @@ public class ArtistService : IArtistService
         var artists = await _repositoryArtist.GetAll();
         var maxAlbumCount = artists.Max(a => a.AlbumIds.Count);
 
-        // Фильтрация и преобразование в ArtistDto
         return artists
             .Where(a => a.AlbumIds.Count == maxAlbumCount)
             .Select(artist => new ArtistDto

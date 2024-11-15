@@ -70,14 +70,11 @@ public class SongService : ISongService
         var existingSong = await _repositorySong.GetById(songDto.Id);
         if (existingSong != null)
         {
-            await _repositorySong.Update(new Song
-            {
-                Id = songDto.Id,
-                Duration = songDto.Duration ?? existingSong.Duration,
-                Name = songDto.Name,
-                AlbumName = songDto.AlbumName ?? existingSong.AlbumName,
-                NumberInAlbum = songDto.NumberInAlbum ?? existingSong.NumberInAlbum
-            });
+            existingSong.Duration = songDto.Duration ?? existingSong.Duration;
+            existingSong.Name = songDto.Name;
+            existingSong.AlbumName = songDto.AlbumName ?? existingSong.AlbumName;
+            existingSong.NumberInAlbum = songDto.NumberInAlbum ?? existingSong.NumberInAlbum;
+            await _repositorySong.Update(existingSong);
         }
     }
 

@@ -86,7 +86,7 @@ public class ArtistController : ControllerBase
             return NotFound();
         }
         await _artistService.Update(artistDto);
-        return NoContent();
+        return Ok();
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public class ArtistController : ControllerBase
             return NotFound();
         }
         await _artistService.Delete(id);
-        return NoContent();
+        return Ok();
     }
 
     /// <summary>

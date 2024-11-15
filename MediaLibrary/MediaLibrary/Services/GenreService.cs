@@ -62,12 +62,9 @@ public class GenreService : IGenreService
         var existingGenre = await _repositoryGenre.GetById(genreDto.Id);
         if (existingGenre != null)
         {
-            await _repositoryGenre.Update(new Genre
-            {
-                Id = genreDto.Id,
-                ArtistIds = genreDto.ArtistIds,
-                Title = genreDto.Title ?? existingGenre.Title
-            });
+            existingGenre.ArtistIds = genreDto.ArtistIds;
+            existingGenre.Title = genreDto.Title ?? existingGenre.Title;
+            await _repositoryGenre.Update(existingGenre);
         }
     }
     /// <inheritdoc />

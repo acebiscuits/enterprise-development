@@ -86,7 +86,7 @@ public class AlbumController : ControllerBase
             return NotFound();
         }
         await _albumService.Update(albumDto);
-        return NoContent();
+        return Ok();
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public class AlbumController : ControllerBase
             return NotFound();
         }
         await _albumService.Delete(id);
-        return NoContent();
+        return Ok();
     }
 
     /// <summary>
@@ -134,7 +134,7 @@ public class AlbumController : ControllerBase
     /// </summary>
     /// <returns>A DTO with min, avg, and max album durations, or NotFound if no data is available.</returns>
     [HttpGet("min-avg-max-duration")]
-    public async Task<ActionResult<IEnumerable<MinAvgMaxDurationDto>>> GetMinAvgMaxAlbumsDuration()
+    public async Task<ActionResult<MinAvgMaxDurationDto>> GetMinAvgMaxAlbumsDuration()
     {
         var durations = await _albumService.GetMinAvgMaxAlbumsDuration();
         return Ok(durations);

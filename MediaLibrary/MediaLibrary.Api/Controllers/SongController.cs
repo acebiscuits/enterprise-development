@@ -83,8 +83,8 @@ public class SongController : ControllerBase
         {
             return NotFound();
         }
-        await _songService.Update(existingSong);
-        return NoContent();
+        await _songService.Update(songDto);
+        return Ok();
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public class SongController : ControllerBase
             return NotFound();
         }
         await _songService.Delete(id);
-        return NoContent();
+        return Ok();
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ public class SongController : ControllerBase
     /// <param name="albumTitle">The title of the album to retrieve songs from.</param>
     /// <returns>A list of ordered song DTOs from the specified album, or NotFound if no songs are found.</returns>
     [HttpGet("{albumTitle}")]
-    public async Task<ActionResult> GetOrderedSongsInCertainAlbum(string albumTitle)
+    public async Task<ActionResult<IEnumerable<SongDto>>> GetOrderedSongsInCertainAlbum(string albumTitle)
     {
         var songs = await _songService.GetOrderedSongsInCertainAlbum(albumTitle);
         return Ok(songs);

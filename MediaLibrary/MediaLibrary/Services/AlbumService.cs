@@ -73,14 +73,11 @@ public class AlbumService : IAlbumService
         var existingAlbum = await _repositoryAlbum.GetById(albumDto.Id);
         if (existingAlbum != null)
         {
-            await _repositoryAlbum.Update(new Album
-            {
-                Id = albumDto.Id,
-                ArtistId = albumDto.ArtistId ?? existingAlbum.ArtistId,
-                ReleaseDate = albumDto.ReleaseDate ?? existingAlbum.ReleaseDate,
-                SongIds = albumDto.SongIds,
-                Title = albumDto.Title ?? existingAlbum.Title
-            });
+            existingAlbum.ArtistId = albumDto.ArtistId ?? existingAlbum.ArtistId;
+            existingAlbum.ReleaseDate = albumDto.ReleaseDate ?? existingAlbum.ReleaseDate;
+            existingAlbum.SongIds = albumDto.SongIds;
+            existingAlbum.Title = albumDto.Title ?? existingAlbum.Title;
+            await _repositoryAlbum.Update(existingAlbum);
         }
     }
 

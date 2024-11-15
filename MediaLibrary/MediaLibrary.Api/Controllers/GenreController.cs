@@ -85,7 +85,7 @@ public class GenreController : ControllerBase
         }
 
         await _genreService.Update(genreDto);
-        return NoContent();
+        return Ok();
     }
 
     /// <summary>
@@ -102,6 +102,6 @@ public class GenreController : ControllerBase
             return NotFound();
         }
         await _genreService.Delete(id);
-        return NoContent();
+        return Ok();
     }
 }
