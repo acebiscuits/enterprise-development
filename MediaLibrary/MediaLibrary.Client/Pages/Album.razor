@@ -1,0 +1,422 @@
+﻿@page "/albums"
+@inject MediaLibraryClient ApiClient
+
+<div class="container content">
+    <h3 class="text-primary">Albums page</h3>
+
+    <button class="btn btn-primary mb-3" @onclick="LoadAlbums">Get All Albums</button>
+
+    @if (!string.IsNullOrEmpty(errorMessageAllAlbums))
+    {
+        <p class="text-danger">Error occurred</p>
+    }
+    else if (isLoadingAllAlbums)
+    {
+        <p>Loading...</p>
+    }
+    else if (albums != null)
+    {
+        <ul class="list-unstyled">
+            @foreach (var album in albums)
+            {
+                <li class="bg-light p-3 rounded mb-2 shadow-sm">
+                    <strong>Id:</strong> @album.Id<br>
+                    <strong>Artist Id:</strong> @album.ArtistId<br>
+                    <strong>Title:</strong> @album.Title<br>
+                    <strong>Release Year:</strong> @album.ReleaseDate<br>
+                    <strong>Song IDs:</strong> @string.Join(", ", album.SongIds)
+                </li>
+            }
+        </ul>
+    }
+
+
+    @code {
+        private IEnumerable<AlbumDto>? albums;
+        private string? errorMessageAllAlbums;
+        private bool isLoadingAllAlbums = false;
+
+        private async Task LoadAlbums()
+        {
+            isLoadingAllAlbums = true;
+            errorMessageAllAlbums = null;
+
+            try
+            {
+                albums = await ApiClient.AlbumAllAsync();
+            }
+            catch (Exception ex)
+            {
+                errorMessageAllAlbums = ex.Message;
+            }
+            finally
+            {
+                isLoadingAllAlbums = false;
+            }
+        }
+    }
+
+    <h4 class="text-primary mt-4">Add New Album</h4>
+    <div class="mb-3">
+        <input type="text" class="form-control mb-2" placeholder="Title" @bind="newAlbum.Title" />
+        <h6 class="text-muted">Artist ID</h6>
+        <input type="number" class="form-control mb-2" placeholder="Artist ID" @bind="newAlbum.ArtistId" />
+        <h6 class="text-muted">Release year</h6>
+        <input type="number" class="form-control mb-2" placeholder="Release Year" @bind="newAlbum.ReleaseDate" />
+        <h6 class="text-muted">Sons ID</h6>
+        <input type="text" class="form-control mb-2" placeholder="e.g., 1,2,3" @bind="songIdsInput" />
+    </div>
+
+    <button class="btn btn-primary mb-3" @onclick="AddAlbum">Add Album</button>
+
+    @if (!string.IsNullOrEmpty(errorMessageAddingAlbum))
+    {
+        <p class="text-danger">Error occurred</p>
+    }
+    else if (!string.IsNullOrEmpty(successMessageAddingAlbum))
+    {
+        <p class="text-success">@successMessageAddingAlbum</p>
+    }
+
+    @code {
+        private AlbumCreateDto newAlbum = new();
+        private string songIdsInput = "";
+        private string? errorMessageAddingAlbum;
+        private string? successMessageAddingAlbum;
+
+        private async Task AddAlbum()
+        {
+            errorMessageAddingAlbum = null;
+            successMessageAddingAlbum = null;
+
+            newAlbum.SongIds = ParseIds(songIdsInput);
+
+            try
+            {
+                await ApiClient.AlbumPOSTAsync(newAlbum);
+                successMessageAddingAlbum = "Album added successfully";
+            }
+            catch (Exception ex)
+            {
+                errorMessageAddingAlbum = ex.Message;
+            }
+            finally
+            {
+                newAlbum = new AlbumCreateDto();
+                songIdsInput = "";
+            }
+        }
+
+        private List<int> ParseIds(string input)
+        {
+            return input
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(id => int.TryParse(id.Trim(), out var parsedId) ? parsedId : (int?)null)
+                .Where(id => id.HasValue)
+                .Select(id => id!.Value)
+                .ToList();
+        }
+    }
+
+    <h4 class="text-primary mt-4">Get Album by ID</h4>
+    <h6 class="text-muted">Album ID</h6>
+    <div class="input-group mb-3">
+        <input type="number" class="form-control" placeholder="Enter Album ID" @bind="albumId" />
+        <button class="btn btn-primary" @onclick="() => LoadAlbumById(albumId)">Get Album by ID</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessageAlbumById))
+    {
+        <p class="text-danger">Error occurred</p>
+    }
+    else if (isLoadingAlbumById)
+    {
+        <p>Loading...</p>
+    }
+    else if (album != null)
+    {
+        <div class="bg-light p-3 rounded mb-3 shadow-sm">
+            <strong>Id:</strong> @album.Id<br>
+            <strong>Artist Id:</strong> @album.ArtistId<br>
+            <strong>Title:</strong> @album.Title<br>
+            <strong>Release Year:</strong> @album.ReleaseDate<br>
+            <strong>Song IDs:</strong> @string.Join(", ", album.SongIds)
+        </div>
+    }
+    @code
+    {
+        private AlbumDto? album;
+        private string? errorMessageAlbumById;
+        private bool isLoadingAlbumById = false;
+        private int albumId;
+
+        private async Task LoadAlbumById(int id)
+        {
+            isLoadingAlbumById = true;
+            errorMessageAlbumById = null;
+
+            try
+            {
+                album = await ApiClient.AlbumGETAsync(id);
+            }
+            catch (Exception ex)
+            {
+                errorMessageAlbumById = ex.Message;
+            }
+            finally
+            {
+                isLoadingAlbumById = false;
+            }
+        }
+    }
+
+    <h4 class="text-primary mt-4">Update Album</h4>
+    <h6 class="text-muted">Album ID</h6>
+    <div class="mb-3">
+        <input type="number" class="form-control mb-2" placeholder="Enter Album ID" @bind="existingAlbum.Id" />
+        <input type="text" class="form-control mb-2" placeholder="Title" @bind="existingAlbum.Title" />
+        <input type="number" class="form-control mb-2" placeholder="Artist ID" @bind="existingAlbum.ArtistId" />
+        <input type="number" class="form-control mb-2" placeholder="Release Year" @bind="existingAlbum.ReleaseDate" />
+        <h6 class="text-muted">Sons IDs</h6>
+        <input type="text" class="form-control mb-2" placeholder="e.g., 1,2,3" @bind="songIdsInput" />
+    </div>
+
+    <button class="btn btn-primary mb-3" @onclick="UpdateAlbum">Update Album</button>
+
+    @if (!string.IsNullOrEmpty(successMessageUpdateAlbum))
+    {
+        <p class="text-success">@successMessageUpdateAlbum</p>
+    }
+    else if (!string.IsNullOrEmpty(errorMessageUpdateAlbum))
+    {
+        <p class="text-danger">Error occurred: @errorMessageUpdateAlbum</p>
+    }
+
+    @code
+    {
+        private AlbumDto existingAlbum = new();
+        private string? successMessageUpdateAlbum;
+        private string? errorMessageUpdateAlbum;
+
+        private async Task UpdateAlbum()
+        {
+            successMessageUpdateAlbum = null;
+            errorMessageUpdateAlbum = null;
+
+            existingAlbum.SongIds = ParseIds(songIdsInput);
+
+            try
+            {
+                await ApiClient.AlbumPUTAsync(existingAlbum);
+                successMessageUpdateAlbum = "Album updated successfully!";
+            }
+            catch (Exception ex)
+            {
+                errorMessageUpdateAlbum = ex.Message;
+            }
+        }
+    }
+
+    <h4 class="text-primary mt-4">Delete Album by ID</h4>
+    <h6 class="text-muted">Album ID</h6>
+    <div class="input-group mb-3">
+        <input type="number" class="form-control" placeholder="Enter Album ID" @bind="deleteAlbumId" />
+        <button class="btn btn-primary" @onclick="() => DeleteAlbumById(deleteAlbumId)">Delete Album by ID</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessageDeleteAlbumById))
+    {
+        <p class="text-danger">Error occurred</p>
+    }
+    else if (!string.IsNullOrEmpty(successMessageDeleteAlbumById))
+    {
+        <p class="text-success">@successMessageDeleteAlbumById</p>
+    }
+
+    @code
+    {
+        private string? errorMessageDeleteAlbumById;
+        private string? successMessageDeleteAlbumById;
+        private int deleteAlbumId;
+
+        private async Task DeleteAlbumById(int id)
+        {
+            errorMessageAlbumById = null;
+            successMessageDeleteAlbumById = null;
+
+            try
+            {
+                await ApiClient.AlbumDELETEAsync(id);
+                successMessageDeleteAlbumById = $"Album with ID {id} deleted successfully.";
+                deleteAlbumId = -1;
+            }
+            catch (Exception ex)
+            {
+                errorMessageDeleteAlbumById = ex.Message;
+            }
+        }
+    }
+
+    <h4 class="text-primary mt-4">Get Albums Released In A Specified Year, Including Info About Album Duration</h4>
+
+    <h6 class="text-muted">Year</h6>
+    <div class="input-group mb-3">
+        <input type="number" class="form-control" placeholder="Enter Year" @bind="year" />
+    </div>
+    <button class="btn btn-primary mb-3" @onclick="() => LoadAlbumsInSpecifiedYear(year)">Get Albums</button>
+
+    @if (!string.IsNullOrEmpty(errorMessageAlbumsInSpecifiedYear))
+    {
+        <p class="text-danger">Error occurred</p>
+    }
+    else if (isLoadingAlbumsInSpecifiedYear)
+    {
+        <p>Loading...</p>
+    }
+    else if (albumsInSpecifiedYear != null)
+    {
+        <ul class="list-unstyled">
+            @foreach (var album in albumsInSpecifiedYear)
+            {
+                <li class="bg-light p-3 rounded mb-2 shadow-sm">
+                    <strong>Id:</strong> @album.Id<br>
+                    <strong>Artist Id:</strong> @album.ArtistId<br>
+                    <strong>Title:</strong> @album.Title<br>
+                    <strong>Release Year:</strong> @album.ReleaseDate<br>
+                    <strong>Song IDs:</strong> @string.Join(", ", album.SongIds)<br>
+                    <strong>Duration:</strong> @album.SongsCount
+                </li>
+            }
+        </ul>
+    }
+
+
+    @code {
+        private IEnumerable<AlbumInfoAndDurationDto>? albumsInSpecifiedYear;
+        private int year;
+        private string? errorMessageAlbumsInSpecifiedYear;
+        private bool isLoadingAlbumsInSpecifiedYear = false;
+
+        private async Task LoadAlbumsInSpecifiedYear(int year)
+        {
+            isLoadingAlbumsInSpecifiedYear = true;
+            errorMessageAlbumsInSpecifiedYear = null;
+
+            try
+            {
+                albumsInSpecifiedYear = await ApiClient.YearAsync(year);
+            }
+            catch (Exception ex)
+            {
+                errorMessageAlbumsInSpecifiedYear = ex.Message;
+            }
+            finally
+            {
+                isLoadingAlbumsInSpecifiedYear = false;
+            }
+        }
+    }
+
+
+    <h4 class="text-primary mt-4">Get Top 5 Albums By Duratiom</h4>
+
+    <button class="btn btn-primary mb-3" @onclick="LoadTop5AlbumsByDuratiom">Get Top 5 Albums By Duration</button>
+
+    @if (!string.IsNullOrEmpty(errorMessageLoadTop5AlbumsByDuratiom))
+    {
+        <p class="text-danger">Error occurred</p>
+    }
+    else if (isLoadingLoadTop5AlbumsByDuratiom)
+    {
+        <p>Loading...</p>
+    }
+    else if (top5AlbumsByDuratiom != null)
+    {
+        <ul class="list-unstyled">
+            @foreach (var album in top5AlbumsByDuratiom)
+            {
+                <li class="bg-light p-3 rounded mb-2 shadow-sm">
+                    <strong>Id:</strong> @album.Id<br>
+                    <strong>Artist Id:</strong> @album.ArtistId<br>
+                    <strong>Title:</strong> @album.Title<br>
+                    <strong>Release Year:</strong> @album.ReleaseDate<br>
+                    <strong>Song IDs:</strong> @string.Join(", ", album.SongIds)
+                </li>
+            }
+        </ul>
+    }
+
+
+    @code {
+        private IEnumerable<AlbumDto>? top5AlbumsByDuratiom;
+        private string? errorMessageLoadTop5AlbumsByDuratiom;
+        private bool isLoadingLoadTop5AlbumsByDuratiom = false;
+
+        private async Task LoadTop5AlbumsByDuratiom()
+        {
+            isLoadingLoadTop5AlbumsByDuratiom = true;
+            errorMessageLoadTop5AlbumsByDuratiom = null;
+
+            try
+            {
+                top5AlbumsByDuratiom = await ApiClient.TopFiveByDurationAsync();
+            }
+            catch (Exception ex)
+            {
+                errorMessageLoadTop5AlbumsByDuratiom = ex.Message;
+            }
+            finally
+            {
+                isLoadingLoadTop5AlbumsByDuratiom = false;
+            }
+        }
+    }
+
+
+    <h4 class="text-primary mt-4">Get Min-Avg-Max Albums Duration</h4>
+
+    <button class="btn btn-primary mb-3" @onclick="LoadMinAvgMaxAlbumsDuration">Get Min-Avg-Max Albums Duration</button>
+
+    @if (!string.IsNullOrEmpty(errorMessageMinAvgMaxAlbumsDuration))
+    {
+        <p class="text-danger">Error occurred</p>
+    }
+    else if (isLoadingMinAvgMaxAlbumsDuration)
+    {
+        <p>Loading...</p>
+    }
+    else if (durations != null)
+    {
+        <div class="bg-light p-3 rounded mb-3 shadow-sm">
+            <strong>Min Duration:</strong> @durations.Min<br>
+            <strong>Avg Duration:</strong> @durations.Avg<br>
+            <strong>Max Duration:</strong> @durations.Max<br>
+        </div>
+    }
+
+
+    @code {
+        private MinAvgMaxDurationDto? durations;
+        private string? errorMessageMinAvgMaxAlbumsDuration;
+        private bool isLoadingMinAvgMaxAlbumsDuration = false;
+
+        private async Task LoadMinAvgMaxAlbumsDuration()
+        {
+            isLoadingMinAvgMaxAlbumsDuration = true;
+            errorMessageMinAvgMaxAlbumsDuration = null;
+
+            try
+            {
+                durations = await ApiClient.MinAvgMaxDurationAsync();
+            }
+            catch (Exception ex)
+            {
+                errorMessageMinAvgMaxAlbumsDuration = ex.Message;
+            }
+            finally
+            {
+                isLoadingMinAvgMaxAlbumsDuration = false;
+            }
+        }
+    }
+</div>
