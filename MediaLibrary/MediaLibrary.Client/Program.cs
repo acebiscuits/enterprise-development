@@ -7,8 +7,9 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5000";
 builder.Services.AddScoped(sp =>
-    new MediaLibraryClient("http://localhost:5071", new HttpClient()));
+    new MediaLibraryClient(apiBaseUrl, new HttpClient()));
 
 
 await builder.Build().RunAsync();

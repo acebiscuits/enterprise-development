@@ -4,20 +4,17 @@
 <div class="container content">
     <h3 class="text-primary">Genres page</h3>
 
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <p class="text-danger">Error: @_errorMessage</p>
+    }
+
     <button class="btn btn-primary mb-3" @onclick="LoadGenres">Get All Genres</button>
 
-    @if (!string.IsNullOrEmpty(errorMessageAllGenres))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (isLoadingAllGenres)
-    {
-        <p>Loading...</p>
-    }
-    else if (genres != null)
+    @if (_genres != null)
     {
         <ul class="list-unstyled">
-            @foreach (var genre in genres)
+            @foreach (var genre in _genres)
             {
                 <li class="bg-light p-3 rounded mb-2 shadow-sm">
                     <strong>Id:</strong> @genre.Id<br>
@@ -35,113 +32,32 @@
             }
         </ul>
     }
-    @code {
-        private IEnumerable<GenreDto>? genres;
-        private string? errorMessageAllGenres;
-        private bool isLoadingAllGenres = false;
-
-        private async Task LoadGenres()
-        {
-            isLoadingAllGenres = true;
-            errorMessageAllGenres = null;
-
-            try
-            {
-                genres = await ApiClient.GenreAllAsync();
-            }
-            catch (Exception ex)
-            {
-                errorMessageAllGenres = ex.Message;
-            }
-            finally
-            {
-                isLoadingAllGenres = false;
-            }
-        }
-    }
 
     <h4 class="text-primary mt-4">Add New Genre</h4>
     <div class="mb-3">
-        <input type="text" class="form-control mb-2" placeholder="Title" @bind="newGenre.Title" />
+        <input type="text" class="form-control mb-2" placeholder="Title" @bind="_newGenre.Title" />
         <h6 class="text-muted">Artist IDs (comma-separated)</h6>
-        <input type="text" class="form-control mb-2" placeholder="e.g., 1,2,3" @bind="artistIdsInput" />
+        <input type="text" class="form-control mb-2" placeholder="e.g., 1,2,3" @bind="_artistIdsInput" />
     </div>
 
     <button class="btn btn-primary mb-3" @onclick="AddGenre">Add Genre</button>
 
-    @if (!string.IsNullOrEmpty(errorMessageAddingGenre))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (!string.IsNullOrEmpty(successMessageAddingGenre))
-    {
-        <p class="text-success">@successMessageAddingGenre</p>
-    }
-
-
-    @code {
-        private GenreCreateDto newGenre = new();
-        private string artistIdsInput = "";
-        private string? errorMessageAddingGenre;
-        private string? successMessageAddingGenre;
-
-        private async Task AddGenre()
-        {
-            errorMessageAddingGenre = null;
-            successMessageAddingGenre = null;
-
-            newGenre.ArtistIds = ParseIds(artistIdsInput);
-
-            try
-            {
-                await ApiClient.GenrePOSTAsync(newGenre);
-                successMessageAddingGenre = "Genre added successfully";
-            }
-            catch (Exception ex)
-            {
-                errorMessageAddingGenre = ex.Message;
-            }
-            finally
-            {
-                newGenre = new GenreCreateDto();
-                artistIdsInput = "";
-            }
-        }
-        private List<int> ParseIds(string input)
-        {
-            return input
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(id => int.TryParse(id.Trim(), out var parsedId) ? parsedId : (int?)null)
-                .Where(id => id.HasValue)
-                .Select(id => id!.Value)
-                .ToList();
-        }
-    }
-
     <h4 class="text-primary mt-4">Get Genre by ID</h4>
     <h6 class="text-muted">Genre ID</h6>
     <div class="input-group mb-3">
-        <input type="number" class="form-control" placeholder="Enter Genre ID" @bind="genreId" />
-        <button class="btn btn-primary" @onclick="() => LoadGenreById(genreId)">Get Genre by ID</button>
+        <input type="number" class="form-control" placeholder="Enter Genre ID" @bind="_genreId" />
+        <button class="btn btn-primary" @onclick="() => LoadGenreById(_genreId)">Get Genre by ID</button>
     </div>
 
-    @if (!string.IsNullOrEmpty(errorMessageGenreById))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (isLoadingGenreById)
-    {
-        <p>Loading...</p>
-    }
-    else if (genre != null)
+    @if (_genre != null)
     {
         <div class="bg-light p-3 rounded mb-3 shadow-sm">
-            <strong>Id:</strong> @genre.Id<br>
-            <strong>Title:</strong> @genre.Title<br>
+            <strong>Id:</strong> @_genre.Id<br>
+            <strong>Title:</strong> @_genre.Title<br>
             <strong>Artist IDs:</strong>
-            @if (genre.ArtistIds != null && genre.ArtistIds.Any())
+            @if (_genre.ArtistIds != null && _genre.ArtistIds.Any())
             {
-                <span>@string.Join(", ", genre.ArtistIds)</span>
+                <span>@string.Join(", ", _genre.ArtistIds)</span>
             }
             else
             {
@@ -149,119 +65,123 @@
             }
         </div>
     }
-        @code
-    {
-        private GenreDto? genre;
-        private string? errorMessageGenreById;
-        private bool isLoadingGenreById = false;
-        private int genreId;
-
-        private async Task LoadGenreById(int id)
-        {
-            isLoadingGenreById = true;
-            errorMessageGenreById = null;
-
-            try
-            {
-                genre = await ApiClient.GenreGETAsync(id);
-            }
-            catch (Exception ex)
-            {
-                errorMessageGenreById = ex.Message;
-            }
-            finally
-            {
-                isLoadingGenreById = false;
-            }
-        }
-    }
 
     <h4 class="text-primary mt-4">Update Genre</h4>
     <div class="mb-3">
         <h6 class="text-muted">Genre ID</h6>
-        <input type="number" class="form-control mb-2" placeholder="Enter Genre ID" @bind="existingGenre.Id" />
-        <input type="text" class="form-control mb-2" placeholder="Title" @bind="existingGenre.Title" />
+        <input type="number" class="form-control mb-2" placeholder="Enter Genre ID" @bind="_existingGenre.Id" />
+        <input type="text" class="form-control mb-2" placeholder="Title" @bind="_existingGenre.Title" />
         <h6 class="text-muted">Artist IDs (comma-separated)</h6>
-        <input type="text" class="form-control mb-2" @bind="artistIdsInput" placeholder="e.g., 1,2,3" />
+        <input type="text" class="form-control mb-2" @bind="_artistIdsInput" placeholder="e.g., 1,2,3" />
     </div>
 
     <button class="btn btn-primary mb-3" @onclick="UpdateGenre">Update Genre</button>
 
-    @if (!string.IsNullOrEmpty(successMessageUpdateGenre))
-    {
-        <p class="text-success">@successMessageUpdateGenre</p>
-    }
-    else if (!string.IsNullOrEmpty(errorMessageUpdateGenre))
-    {
-        <p class="text-danger">Error occurred: @errorMessageUpdateGenre</p>
-    }
-
-    @code
-    {
-        private GenreDto existingGenre = new();
-        private string? successMessageUpdateGenre;
-        private string? errorMessageUpdateGenre;
-
-        private async Task UpdateGenre()
-        {
-            successMessageUpdateGenre = null;
-            errorMessageUpdateGenre = null;
-
-            try
-            {
-                var artistIds = artistIdsInput.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                            .Select(id => int.Parse(id.Trim()))
-                                            .ToList();
-
-                existingGenre.ArtistIds = artistIds;
-
-                await ApiClient.GenrePUTAsync(existingGenre);
-                successMessageUpdateGenre = "Genre updated successfully!";
-            }
-            catch (Exception ex)
-            {
-                errorMessageUpdateGenre = ex.Message;
-            }
-        }
-    }
-
     <h4 class="text-primary mt-4">Delete Genre by ID</h4>
     <h6 class="text-muted">Genre ID</h6>
     <div class="input-group mb-3">
-        <input type="number" class="form-control" placeholder="Enter Genre ID" @bind="deleteGenreId" />
-        <button class="btn btn-primary" @onclick="() => DeleteGenreById(deleteGenreId)">Delete Genre by ID</button>
+        <input type="number" class="form-control" placeholder="Enter Genre ID" @bind="_deleteGenreId" />
+        <button class="btn btn-primary" @onclick="() => DeleteGenreById(_deleteGenreId)">Delete Genre by ID</button>
     </div>
+</div>
 
-    @if (!string.IsNullOrEmpty(errorMessageDeleteGenreById))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (!string.IsNullOrEmpty(successMessageDeleteGenreById))
-    {
-        <p class="text-success">@successMessageDeleteGenreById</p>
-    }
+@code {
+    private IEnumerable<GenreDto>? _genres;
+    private GenreCreateDto _newGenre = new();
+    private GenreDto? _genre;
+    private GenreDto _existingGenre = new();
+    private string _artistIdsInput = "";
+    private int _genreId;
+    private int _deleteGenreId;
+    private string? _errorMessage;
 
-    @code
+    private async Task LoadGenres()
     {
-        private string? errorMessageDeleteGenreById;
-        private string? successMessageDeleteGenreById;
-        private int deleteGenreId;
-
-        private async Task DeleteGenreById(int id)
+        try
         {
-            errorMessageGenreById = null;
-            successMessageDeleteGenreById = null;
-
-            try
-            {
-                await ApiClient.GenreDELETEAsync(id);
-                successMessageDeleteGenreById = $"Genre with ID {id} deleted successfully.";
-                deleteGenreId = -1;
-            }
-            catch (Exception ex)
-            {
-                errorMessageDeleteGenreById = ex.Message;
-            }
+            _genres = await ApiClient.GenreAllAsync();
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to load genres: {ex.Message}";
+            _genres = null;
         }
     }
-</div>
+
+    private async Task AddGenre()
+    {
+        _newGenre.ArtistIds = ParseIds(_artistIdsInput);
+
+        try
+        {
+            await ApiClient.GenrePOSTAsync(_newGenre);
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to add genre: {ex.Message}";
+        }
+        finally
+        {
+            _newGenre = new GenreCreateDto();
+            _artistIdsInput = "";
+        }
+    }
+
+    private List<int> ParseIds(string input)
+    {
+        return input
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(id => int.TryParse(id.Trim(), out var parsedId) ? parsedId : (int?)null)
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .ToList();
+    }
+
+    private async Task LoadGenreById(int id)
+    {
+        try
+        {
+            _genre = await ApiClient.GenreGETAsync(id);
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to laod genre by id: {ex.Message}";
+        }
+    }
+
+    private async Task UpdateGenre()
+    {
+        try
+        {
+            var artistIds = _artistIdsInput.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(id => int.Parse(id.Trim()))
+                                        .ToList();
+
+            _existingGenre.ArtistIds = artistIds;
+
+            await ApiClient.GenrePUTAsync(_existingGenre);
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to update genre: {ex.Message}";
+        }
+    }
+
+    private async Task DeleteGenreById(int id)
+    {
+        try
+        {
+            await ApiClient.GenreDELETEAsync(id);
+            _errorMessage = null;
+            _deleteGenreId = -1;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to delete genre: {ex.Message}";
+        }
+    }
+}

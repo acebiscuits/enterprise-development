@@ -4,20 +4,17 @@
 <div class="container content">
     <h3 class="text-primary">Artists page</h3>
 
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <p class="text-danger">Error: @_errorMessage</p>
+    }
+
     <button class="btn btn-primary mb-3" @onclick="LoadArtists">Get All Artists</button>
 
-    @if (!string.IsNullOrEmpty(errorMessageAllArtists))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (isLoadingAllArtists)
-    {
-        <p>Loading...</p>
-    }
-    else if (artists != null)
+    @if (_artists != null)
     {
         <ul class="list-unstyled">
-            @foreach (var artist in artists)
+            @foreach (var artist in _artists)
             {
                 <li class="bg-light p-3 rounded mb-2 shadow-sm">
                     <strong>Id:</strong> @artist.Id<br>
@@ -48,120 +45,36 @@
         </ul>
     }
 
-@code {
-    private IEnumerable<ArtistDto>? artists;
-    private string? errorMessageAllArtists;
-    private bool isLoadingAllArtists = false;
-
-    private async Task LoadArtists()
-    {
-        isLoadingAllArtists = true;
-        errorMessageAllArtists = null;
-
-        try
-        {
-            artists = await ApiClient.ArtistAllAsync();
-        }
-        catch (Exception ex)
-        {
-            errorMessageAllArtists = ex.Message;
-        }
-        finally
-        {
-            isLoadingAllArtists = false;
-        }
-    }
-}
-
     <h4 class="text-primary mt-4">Add New Artist</h4>
     <div class="mb-3">
-        <input type="text" class="form-control mb-2" placeholder="Name" @bind="newArtist.Name" />
-        <input type="text" class="form-control mb-2" placeholder="Description" @bind="newArtist.Description" />
+        <input type="text" class="form-control mb-2" placeholder="Name" @bind="_newArtist.Name" />
+        <input type="text" class="form-control mb-2" placeholder="Description" @bind="_newArtist.Description" />
         <h6 class="text-muted">Album IDs (comma-separated)</h6>
-        <input type="text" class="form-control mb-2" placeholder="e.g., 1,2,3" @bind="albumIdsInput" />
+        <input type="text" class="form-control mb-2" placeholder="e.g., 1,2,3" @bind="_albumIdsInput" />
         <h6 class="text-muted">Genre IDs (comma-separated)</h6>
-        <input type="text" class="form-control mb-2" placeholder="e.g., 1,2,3" @bind="genreIdsInput" />
+        <input type="text" class="form-control mb-2" placeholder="e.g., 1,2,3" @bind="_genreIdsInput" />
     </div>
 
     <button class="btn btn-primary mb-3" @onclick="AddArtist">Add Artist</button>
 
-    @if (!string.IsNullOrEmpty(errorMessageAddingArtist))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (!string.IsNullOrEmpty(successMessageAddingArtist))
-    {
-        <p class="text-success">@successMessageAddingArtist</p>
-    }
-
-@code {
-    private ArtistCreateDto newArtist = new();
-    private string albumIdsInput = "";
-    private string genreIdsInput = "";
-    private string? errorMessageAddingArtist;
-    private string? successMessageAddingArtist;
-
-    private async Task AddArtist()
-    {
-        errorMessageAddingArtist = null;
-        successMessageAddingArtist = null;
-
-        newArtist.AlbumIds = ParseIds(albumIdsInput);
-        newArtist.GenreIds = ParseIds(genreIdsInput);
-
-        try
-        {
-            await ApiClient.ArtistPOSTAsync(newArtist);
-            successMessageAddingArtist = "Artist added successfully";
-        }
-        catch (Exception ex)
-        {
-            errorMessageAddingArtist = ex.Message;
-        }
-                finally
-        {
-            newArtist = new ArtistCreateDto();
-            albumIdsInput = "";
-            genreIdsInput = "";
-        }
-    }
-    private List<int> ParseIds(string input)
-    {
-        return input
-            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(id => int.TryParse(id.Trim(), out var parsedId) ? parsedId : (int?)null)
-            .Where(id => id.HasValue)
-            .Select(id => id!.Value)
-            .ToList();
-    }
-}
-
     <h4 class="text-primary mt-4">Get Artist by ID</h4>
     <h6 class="text-muted">Artist ID</h6>
     <div class="input-group mb-3">
-        <input type="number" class="form-control" placeholder="Enter Artist ID" @bind="artistId" />
-        <button class="btn btn-primary" @onclick="() => LoadArtistById(artistId)">Get Artist by ID</button>
+        <input type="number" class="form-control" placeholder="Enter Artist ID" @bind="_artistId" />
+        <button class="btn btn-primary" @onclick="() => LoadArtistById(_artistId)">Get Artist by ID</button>
     </div>
 
-    @if (!string.IsNullOrEmpty(errorMessageArtistById))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (isLoadingArtistById)
-    {
-        <p>Loading...</p>
-    }
-    else if (artist != null)
+    @if (_artist != null)
     {
         <div class="bg-light p-3 rounded mb-3 shadow-sm">
-            <strong>Id:</strong> @artist.Id<br>
-            <strong>Name:</strong> @artist.Name<br>
-            <strong>Description:</strong> @artist.Description
+            <strong>Id:</strong> @_artist.Id<br>
+            <strong>Name:</strong> @_artist.Name<br>
+            <strong>Description:</strong> @_artist.Description
             <br>
             <strong>Genre IDs:</strong>
-            @if (artist.GenreIds != null && artist.GenreIds.Any())
+            @if (_artist.GenreIds != null && _artist.GenreIds.Any())
             {
-                <span>@string.Join(", ", artist.GenreIds)</span>
+                <span>@string.Join(", ", _artist.GenreIds)</span>
             }
             else
             {
@@ -169,9 +82,9 @@
             }
             <br>
             <strong>Album IDs:</strong>
-            @if (artist.AlbumIds != null && artist.AlbumIds.Any())
+            @if (_artist.AlbumIds != null && _artist.AlbumIds.Any())
             {
-                <span>@string.Join(", ", artist.AlbumIds)</span>
+                <span>@string.Join(", ", _artist.AlbumIds)</span>
             }
             else
             {
@@ -180,144 +93,33 @@
         </div>
     }
 
-@code
-{
-    private ArtistDto? artist;
-    private string? errorMessageArtistById;
-    private bool isLoadingArtistById = false;
-    private int artistId;
-
-    private async Task LoadArtistById(int id)
-    {
-        isLoadingArtistById = true;
-        errorMessageArtistById = null;
-
-        try
-        {
-            artist = await ApiClient.ArtistGETAsync(id);
-        }
-        catch (Exception ex)
-        {
-            errorMessageArtistById = ex.Message;
-        }
-        finally
-        {
-            isLoadingArtistById = false;
-        }
-    }
-}
-
     <h4 class="text-primary mt-4">Update Artist</h4>
     <h6 class="text-muted">Artist ID</h6>
     <div class="mb-3">
-        <input type="number" class="form-control mb-2" placeholder="Enter Artist ID" @bind="existingArtist.Id" />
-        <input type="text" class="form-control mb-2" placeholder="Name" @bind="existingArtist.Name" />
-        <input type="text" class="form-control mb-2" placeholder="Description" @bind="existingArtist.Description" />
+        <input type="number" class="form-control mb-2" placeholder="Enter Artist ID" @bind="_existingArtist.Id" />
+        <input type="text" class="form-control mb-2" placeholder="Name" @bind="_existingArtist.Name" />
+        <input type="text" class="form-control mb-2" placeholder="Description" @bind="_existingArtist.Description" />
         <h6 class="text-muted">Album IDs (comma-separated)</h6>
-        <input type="text" class="form-control mb-2" @bind="albumIdsInput" placeholder="e.g., 1,2,3" />
+        <input type="text" class="form-control mb-2" @bind="_albumIdsInput" placeholder="e.g., 1,2,3" />
         <h6 class="text-muted">Genre IDs (comma-separated)</h6>
-        <input type="text" class="form-control mb-2" @bind="genreIdsInput" placeholder="e.g., 4,5,6" />
+        <input type="text" class="form-control mb-2" @bind="_genreIdsInput" placeholder="e.g., 4,5,6" />
     </div>
 
     <button class="btn btn-primary mb-3" @onclick="UpdateArtist">Update Artist</button>
 
-    @if (!string.IsNullOrEmpty(successMessageUpdateArtist))
-    {
-        <p class="text-success">@successMessageUpdateArtist</p>
-    }
-    else if (!string.IsNullOrEmpty(errorMessageUpdateArtist))
-    {
-        <p class="text-danger">Error occurred: @errorMessageUpdateArtist</p>
-    }
-
-@code
-{
-    private ArtistDto existingArtist = new();
-    private string? successMessageUpdateArtist;
-    private string? errorMessageUpdateArtist;
-
-    private async Task UpdateArtist()
-    {
-        successMessageUpdateArtist = null;
-        errorMessageUpdateArtist = null;
-
-        try
-        {
-            var albumIds = albumIdsInput.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                        .Select(id => int.Parse(id.Trim()))
-                                        .ToList();
-
-            var genreIds = genreIdsInput.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                        .Select(id => int.Parse(id.Trim()))
-                                        .ToList();
-
-            existingArtist.AlbumIds = albumIds;
-            existingArtist.GenreIds = genreIds;
-
-            await ApiClient.ArtistPUTAsync(existingArtist);
-            successMessageUpdateArtist = "Artist updated successfully!";
-        }
-        catch (Exception ex)
-        {
-            errorMessageUpdateArtist = ex.Message;
-        }
-    }
-}
-
     <h4 class="text-primary mt-4">Delete Artist by ID</h4>
     <h6 class="text-muted">Artist ID</h6>
     <div class="input-group mb-3">
-        <input type="number" class="form-control" placeholder="Enter Artist ID" @bind="deleteArtistId" />
-        <button class="btn btn-primary" @onclick="() => DeleteArtistById(deleteArtistId)">Delete Artist by ID</button>
+        <input type="number" class="form-control" placeholder="Enter Artist ID" @bind="_deleteArtistId" />
+        <button class="btn btn-primary" @onclick="() => DeleteArtistById(_deleteArtistId)">Delete Artist by ID</button>
     </div>
-
-    @if (!string.IsNullOrEmpty(errorMessageDeleteArtistById))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (!string.IsNullOrEmpty(successMessageDeleteArtistById))
-    {
-        <p class="text-success">@successMessageDeleteArtistById</p>
-    }
-
-@code
-{
-    private string? errorMessageDeleteArtistById;
-    private string? successMessageDeleteArtistById;
-    private int deleteArtistId;
-
-    private async Task DeleteArtistById(int id)
-    {
-        errorMessageArtistById = null;
-        successMessageDeleteArtistById = null;
-
-        try
-        {
-            await ApiClient.ArtistDELETEAsync(id);
-            successMessageDeleteArtistById = $"Artist with ID {id} deleted successfully.";
-            deleteArtistId = -1;
-        }
-        catch (Exception ex)
-        {
-            errorMessageDeleteArtistById = ex.Message;
-        }
-    }
-}
 
     <button class="btn btn-primary mt-3 mb-3" @onclick="LoadArtistsWithMaxAlbumsCount">Get Artists with max albums count</button>
 
-    @if (!string.IsNullOrEmpty(errorMessageArtistsWithMaxAlbumsCount))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (isLoadingArtistsWithMaxAlbumsCount)
-    {
-        <p>Loading...</p>
-    }
-    else if (artistsWithMaxAlbumsCount != null)
+    @if (_artistsWithMaxAlbumsCount != null && _artistsWithMaxAlbumsCount.Any())
     {
         <ul class="list-unstyled">
-            @foreach (var artist in artistsWithMaxAlbumsCount)
+            @foreach (var artist in _artistsWithMaxAlbumsCount)
             {
                 <li class="bg-light p-3 rounded mb-2 shadow-sm">
                     <strong>Id:</strong> @artist.Id<br>
@@ -347,29 +149,129 @@
             }
         </ul>
     }
+</div>
 
-    @code {
-        private IEnumerable<ArtistDto>? artistsWithMaxAlbumsCount;
-        private string? errorMessageArtistsWithMaxAlbumsCount;
-        private bool isLoadingArtistsWithMaxAlbumsCount = false;
+@code {
+    private IEnumerable<ArtistDto>? _artists;
+    private ArtistCreateDto _newArtist = new();
+    private ArtistDto? _artist;
+    private ArtistDto _existingArtist = new();
+    private IEnumerable<ArtistDto>? _artistsWithMaxAlbumsCount;
+    private string? _errorMessage;
+    private string _albumIdsInput = "";
+    private string _genreIdsInput = "";
+    private int _artistId;
+    private int _deleteArtistId;
 
-        private async Task LoadArtistsWithMaxAlbumsCount()
+    private async Task LoadArtists()
+    {
+        try
         {
-            isLoadingArtistsWithMaxAlbumsCount = true;
-            errorMessageArtistsWithMaxAlbumsCount = null;
-
-            try
-            {
-                artistsWithMaxAlbumsCount = await ApiClient.MaxAlbumCountAsync();
-            }
-            catch (Exception ex)
-            {
-                errorMessageArtistsWithMaxAlbumsCount = ex.Message;
-            }
-            finally
-            {
-                isLoadingArtistsWithMaxAlbumsCount = false;
-            }
+            _artists = await ApiClient.ArtistAllAsync();
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to load artists: {ex.Message}";
+            _artists = null;
         }
     }
-</div>
+
+    private async Task AddArtist()
+    {
+
+        _newArtist.AlbumIds = ParseIds(_albumIdsInput);
+        _newArtist.GenreIds = ParseIds(_genreIdsInput);
+
+        try
+        {
+            await ApiClient.ArtistPOSTAsync(_newArtist);
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to add artists: {ex.Message}";
+        }
+        finally
+        {
+            _newArtist = new ArtistCreateDto();
+            _albumIdsInput = "";
+            _genreIdsInput = "";
+        }
+    }
+    private List<int> ParseIds(string input)
+    {
+        return input
+        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+        .Select(id => int.TryParse(id.Trim(), out var parsedId) ? parsedId : (int?)null)
+        .Where(id => id.HasValue)
+        .Select(id => id!.Value)
+        .ToList();
+    }
+
+    private async Task LoadArtistById(int id)
+    {
+
+        try
+        {
+            _artist = await ApiClient.ArtistGETAsync(id);
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to load artist by id: {ex.Message}";
+        }
+    }
+
+    private async Task UpdateArtist()
+    {
+
+        try
+        {
+            var albumIds = _albumIdsInput.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(id => int.Parse(id.Trim()))
+            .ToList();
+
+            var genreIds = _genreIdsInput.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(id => int.Parse(id.Trim()))
+            .ToList();
+
+            _existingArtist.AlbumIds = albumIds;
+            _existingArtist.GenreIds = genreIds;
+
+            await ApiClient.ArtistPUTAsync(_existingArtist);
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to update artist: {ex.Message}";
+        }
+    }
+
+    private async Task DeleteArtistById(int id)
+    {
+        try
+        {
+            await ApiClient.ArtistDELETEAsync(id);
+            _deleteArtistId = -1;
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to delete artist: {ex.Message}";
+        }
+    }
+
+    private async Task LoadArtistsWithMaxAlbumsCount()
+    {
+        try
+        {
+            _artistsWithMaxAlbumsCount = await ApiClient.MaxAlbumCountAsync();
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to load artists with max albums count: {ex.Message}";
+        }
+    }
+}

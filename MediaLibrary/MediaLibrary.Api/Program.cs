@@ -5,11 +5,13 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var blazorClientUrl = builder.Configuration["AllowedClients:BlazorClient"] ?? "https://localhost:7000";
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorClient", policy =>
     {
-        policy.WithOrigins("https://localhost:7025")
+        policy.WithOrigins(blazorClientUrl)
               .AllowAnyMethod()
               .AllowAnyHeader();
     });

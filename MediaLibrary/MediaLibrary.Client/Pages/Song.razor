@@ -4,20 +4,17 @@
 <div class="container content">
     <h3 class="text-primary">Songs page</h3>
 
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <p class="text-danger">Error: @_errorMessage</p>
+    }
+
     <button class="btn btn-primary mb-3" @onclick="LoadSongs">Get All Songs</button>
 
-    @if (!string.IsNullOrEmpty(errorMessageAllSongs))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (isLoadingAllSongs)
-    {
-        <p>Loading...</p>
-    }
-    else if (songs != null)
+    @if (_songs != null && _songs.Any())
     {
         <ul class="list-unstyled">
-            @foreach (var song in songs)
+            @foreach (var song in _songs)
             {
                 <li class="bg-light p-3 rounded mb-2 shadow-sm">
                     <strong>Id:</strong> @song.Id<br>
@@ -25,261 +22,72 @@
                     <strong>Number in Album:</strong> @song.NumberInAlbum<br>
                     <strong>Album Name:</strong> @song.AlbumName<br>
                     <strong>Duration:</strong> @song.Duration.ToString()
-
                 </li>
             }
         </ul>
-    }
-
-    @code {
-        private IEnumerable<SongDto>? songs;
-        private string? errorMessageAllSongs;
-        private bool isLoadingAllSongs = false;
-
-        private async Task LoadSongs()
-        {
-            isLoadingAllSongs = true;
-            errorMessageAllSongs = null;
-
-            try
-            {
-                songs = await ApiClient.SongAllAsync();
-            }
-            catch (Exception ex)
-            {
-                errorMessageAllSongs = ex.Message;
-            }
-            finally
-            {
-                isLoadingAllSongs = false;
-            }
-        }
     }
 
     <h4 class="text-primary mt-4">Add New Song</h4>
     <div class="mb-3">
-        <input type="text" class="form-control mb-2" placeholder="Name" @bind="newSong.Name" />
+        <input type="text" class="form-control mb-2" placeholder="Name" @bind="_newSong.Name" />
         <h6 class="text-muted">Number in album</h6>
-        <input type="number" class="form-control mb-2" placeholder="Number in Album" @bind="newSong.NumberInAlbum" />
-        <input type="text" class="form-control mb-2" placeholder="Album Name" @bind="newSong.AlbumName" />
-        <input type="text" class="form-control mb-2" placeholder="Duration (HH:MM:SS)" @bind="durationInput" />
+        <input type="number" class="form-control mb-2" placeholder="Number in Album" @bind="_newSong.NumberInAlbum" />
+        <input type="text" class="form-control mb-2" placeholder="Album Name" @bind="_newSong.AlbumName" />
+        <input type="text" class="form-control mb-2" placeholder="Duration (HH:MM:SS)" @bind="_durationInput" />
     </div>
 
     <button class="btn btn-primary mb-3" @onclick="AddSong">Add Song</button>
 
-    @if (!string.IsNullOrEmpty(errorMessageAddingSong))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (!string.IsNullOrEmpty(successMessageAddingSong))
-    {
-        <p class="text-success">@successMessageAddingSong</p>
-    }
-
-    @code {
-        private SongCreateDto newSong = new();
-        private string durationInput = "";
-        private string? errorMessageAddingSong;
-        private string? successMessageAddingSong;
-
-        private async Task AddSong()
-        {
-            errorMessageAddingSong = null;
-            successMessageAddingSong = null;
-
-            if (System.TimeSpan.TryParse(durationInput, out var duration))
-            {
-                newSong.Duration = duration;
-            }
-            else
-            {
-                errorMessageAddingSong = "Invalid duration format. Use HH:MM:SS.";
-                return;
-            }
-
-            try
-            {
-                await ApiClient.SongPOSTAsync(newSong);
-                successMessageAddingSong = "Song added successfully";
-            }
-            catch (Exception ex)
-            {
-                errorMessageAddingSong = ex.Message;
-            }
-            finally
-            {
-                newSong = new SongCreateDto();
-                durationInput = "";
-            }
-        }
-    }
-
     <h4 class="text-primary mt-4">Get Song by ID</h4>
     <h6 class="text-muted">Song ID</h6>
     <div class="input-group mb-3">
-        <input type="number" class="form-control" placeholder="Enter Song ID" @bind="songId" />
-        <button class="btn btn-primary" @onclick="() => LoadSongById(songId)">Get Song by ID</button>
+        <input type="number" class="form-control" placeholder="Enter Song ID" @bind="_songId" />
+        <button class="btn btn-primary" @onclick="() => LoadSongById(_songId)">Get Song by ID</button>
     </div>
 
-    @if (!string.IsNullOrEmpty(errorMessageSongById))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (isLoadingSongById)
-    {
-        <p>Loading...</p>
-    }
-    else if (song != null)
+    @if (_song != null)
     {
         <div class="bg-light p-3 rounded mb-3 shadow-sm">
-            <strong>Id:</strong> @song.Id<br>
-            <strong>Name:</strong> @song.Name<br>
-            <strong>Number in Album:</strong> @song.NumberInAlbum<br>
-            <strong>Album Name:</strong> @song.AlbumName<br>
-            <strong>Duration:</strong> @song.Duration.ToString()
+            <strong>Id:</strong> @_song.Id<br>
+            <strong>Name:</strong> @_song.Name<br>
+            <strong>Number in Album:</strong> @_song.NumberInAlbum<br>
+            <strong>Album Name:</strong> @_song.AlbumName<br>
+            <strong>Duration:</strong> @_song.Duration.ToString()
         </div>
     }
-    @code
-    {
-        private SongDto? song;
-        private string? errorMessageSongById;
-        private bool isLoadingSongById = false;
-        private int songId;
 
-        private async Task LoadSongById(int id)
-        {
-            isLoadingSongById = true;
-            errorMessageSongById = null;
-
-            try
-            {
-                song = await ApiClient.SongGETAsync(id);
-            }
-            catch (Exception ex)
-            {
-                errorMessageSongById = ex.Message;
-            }
-            finally
-            {
-                isLoadingSongById = false;
-            }
-        }
-    }
 
     <h4 class="text-primary mt-4">Update Song</h4>
     <h6 class="text-muted">Song ID</h6>
     <div class="mb-3">
-        <input type="number" class="form-control mb-2" placeholder="Enter Song ID" @bind="existingSong.Id" />
-        <input type="text" class="form-control mb-2" placeholder="Name" @bind="existingSong.Name" />
-        <input type="number" class="form-control mb-2" placeholder="Number in Album" @bind="existingSong.NumberInAlbum" />
-        <input type="text" class="form-control mb-2" placeholder="Album Name" @bind="existingSong.AlbumName" />
-        <input type="text" class="form-control mb-2" placeholder="Duration (HH:MM:SS)" @bind="durationInput" />
+        <input type="number" class="form-control mb-2" placeholder="Enter Song ID" @bind="_existingSong.Id" />
+        <input type="text" class="form-control mb-2" placeholder="Name" @bind="_existingSong.Name" />
+        <input type="number" class="form-control mb-2" placeholder="Number in Album" @bind="_existingSong.NumberInAlbum" />
+        <input type="text" class="form-control mb-2" placeholder="Album Name" @bind="_existingSong.AlbumName" />
+        <input type="text" class="form-control mb-2" placeholder="Duration (HH:MM:SS)" @bind="_durationInput" />
     </div>
 
     <button class="btn btn-primary mb-3" @onclick="UpdateSong">Update Song</button>
 
-    @if (!string.IsNullOrEmpty(successMessageUpdateSong))
-    {
-        <p class="text-success">@successMessageUpdateSong</p>
-    }
-    else if (!string.IsNullOrEmpty(errorMessageUpdateSong))
-    {
-        <p class="text-danger">Error occurred: @errorMessageUpdateSong</p>
-    }
-
-    @code
-    {
-        private SongDto existingSong = new();
-        private string? successMessageUpdateSong;
-        private string? errorMessageUpdateSong;
-
-        private async Task UpdateSong()
-        {
-            successMessageUpdateSong = null;
-            errorMessageUpdateSong = null;
-
-            if (System.TimeSpan.TryParse(durationInput, out var duration))
-            {
-                existingSong.Duration = duration;
-            }
-            else
-            {
-                errorMessageUpdateSong = "Invalid duration format. Use HH:MM:SS.";
-                return;
-            }
-
-            try
-            {
-                await ApiClient.SongPUTAsync(existingSong);
-                successMessageUpdateSong = "Song updated successfully!";
-            }
-            catch (Exception ex)
-            {
-                errorMessageUpdateSong = ex.Message;
-            }
-        }
-    }
-
     <h4 class="text-primary mt-4">Delete Song by ID</h4>
     <h6 class="text-muted">Song ID</h6>
     <div class="input-group mb-3">
-        <input type="number" class="form-control" placeholder="Enter Song ID" @bind="deleteSongId" />
-        <button class="btn btn-primary" @onclick="() => DeleteSongById(deleteSongId)">Delete Song by ID</button>
+        <input type="number" class="form-control" placeholder="Enter Song ID" @bind="_deleteSongId" />
+        <button class="btn btn-primary" @onclick="() => DeleteSongById(_deleteSongId)">Delete Song by ID</button>
     </div>
-
-    @if (!string.IsNullOrEmpty(errorMessageDeleteSongById))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (!string.IsNullOrEmpty(successMessageDeleteSongById))
-    {
-        <p class="text-success">@successMessageDeleteSongById</p>
-    }
-
-    @code
-    {
-        private string? errorMessageDeleteSongById;
-        private string? successMessageDeleteSongById;
-        private int deleteSongId;
-
-        private async Task DeleteSongById(int id)
-        {
-            errorMessageSongById = null;
-            successMessageDeleteSongById = null;
-
-            try
-            {
-                await ApiClient.SongDELETEAsync(id);
-                successMessageDeleteSongById = $"Song with ID {id} deleted successfully.";
-                deleteSongId = -1;
-            }
-            catch (Exception ex)
-            {
-                errorMessageDeleteSongById = ex.Message;
-            }
-        }
-    }
 
     <h4 class="text-primary mt-4">Get Ordered Songs By Number In Specific Album</h4>
 
     <div class="mb-3">
-        <input type="text" class="form-control mb-2" placeholder="Album title" @bind="albumTitle" />
+        <input type="text" class="form-control mb-2" placeholder="Album title" @bind="_albumTitle" />
     </div>
 
     <button class="btn btn-primary mb-3" @onclick="LoadOrderedSongsInSpecificAlbum">Get Ordered Songs In Specific Album</button>
 
-    @if (!string.IsNullOrEmpty(errorMessageOrderedSongsInSpecificAlbum))
-    {
-        <p class="text-danger">Error occurred</p>
-    }
-    else if (isLoadingOrderedSongsInSpecificAlbum)
-    {
-        <p>Loading...</p>
-    }
-    else if (orderedSongsInSpecificAlbum != null)
+    @if (_orderedSongsInSpecificAlbum != null && _orderedSongsInSpecificAlbum.Any())
     {
         <ul class="list-unstyled">
-            @foreach (var song in orderedSongsInSpecificAlbum)
+            @foreach (var song in _orderedSongsInSpecificAlbum)
             {
                 <li class="bg-light p-3 rounded mb-2 shadow-sm">
                     <strong>Id:</strong> @song.Id<br>
@@ -293,29 +101,124 @@
         </ul>
     }
 
-    @code {
-        private IEnumerable<SongDto>? orderedSongsInSpecificAlbum;
-        private string albumTitle = "";
-        private string? errorMessageOrderedSongsInSpecificAlbum;
-        private bool isLoadingOrderedSongsInSpecificAlbum = false;
 
-        private async Task LoadOrderedSongsInSpecificAlbum()
+</div>
+
+@code {
+    private IEnumerable<SongDto>? _songs;
+    private SongCreateDto _newSong = new();
+    private SongDto? _song;
+    private SongDto _existingSong = new();
+    private IEnumerable<SongDto>? _orderedSongsInSpecificAlbum;
+    private string _durationInput = "";
+    private int _songId;
+    private int _deleteSongId;
+    private string _albumTitle = "";
+    private string? _errorMessage;
+
+    private async Task LoadSongs()
+    {
+        try
         {
-            isLoadingOrderedSongsInSpecificAlbum = true;
-            errorMessageOrderedSongsInSpecificAlbum = null;
-
-            try
-            {
-                orderedSongsInSpecificAlbum = await ApiClient.SongAll2Async(albumTitle);
-            }
-            catch (Exception ex)
-            {
-                errorMessageOrderedSongsInSpecificAlbum = ex.Message;
-            }
-            finally
-            {
-                isLoadingOrderedSongsInSpecificAlbum = false;
-            }
+            _songs = await ApiClient.SongAllAsync();
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to laod songs: {ex.Message}";
+            _songs = null;
         }
     }
-</div>
+
+    private async Task AddSong()
+    {
+        if (System.TimeSpan.TryParse(_durationInput, out var duration))
+        {
+            _newSong.Duration = duration;
+        }
+        else
+        {
+            _errorMessage = "Invalid duration format. Use HH:MM:SS.";
+            return;
+        }
+
+        try
+        {
+            await ApiClient.SongPOSTAsync(_newSong);
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to add song: {ex.Message}";
+        }
+        finally
+        {
+            _newSong = new SongCreateDto();
+            _durationInput = "";
+        }
+    }
+
+    private async Task LoadSongById(int id)
+    {
+        try
+        {
+            _song = await ApiClient.SongGETAsync(id);
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to laod song by id: {ex.Message}";
+        }
+    }
+
+    private async Task UpdateSong()
+    {
+        if (System.TimeSpan.TryParse(_durationInput, out var duration))
+        {
+            _existingSong.Duration = duration;
+        }
+        else
+        {
+            _errorMessage = "Invalid duration format. Use HH:MM:SS.";
+            return;
+        }
+
+        try
+        {
+            await ApiClient.SongPUTAsync(_existingSong);
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to update songs: {ex.Message}";
+        }
+    }
+
+    private async Task DeleteSongById(int id)
+    {
+        try
+        {
+            await ApiClient.SongDELETEAsync(id);
+            _errorMessage = null;
+            _deleteSongId = -1;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to delete songs: {ex.Message}";
+        }
+    }
+
+    private async Task LoadOrderedSongsInSpecificAlbum()
+    {
+        try
+        {
+            _orderedSongsInSpecificAlbum = await ApiClient.SongAll2Async(_albumTitle);
+            _errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"failed to laod ordered songs in specific album: {ex.Message}";
+            _orderedSongsInSpecificAlbum = null;
+        }
+    }
+}
