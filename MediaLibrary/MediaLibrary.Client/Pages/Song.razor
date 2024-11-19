@@ -125,7 +125,7 @@
         }
         catch (Exception ex)
         {
-            _errorMessage = $"failed to laod songs: {ex.Message}";
+            _errorMessage = $"failed to load songs: {ex.Message}";
             _songs = null;
         }
     }
@@ -167,7 +167,7 @@
         }
         catch (Exception ex)
         {
-            _errorMessage = $"failed to laod song by id: {ex.Message}";
+            _errorMessage = $"failed to load song by id: {ex.Message}";
         }
     }
 
@@ -190,7 +190,7 @@
         }
         catch (Exception ex)
         {
-            _errorMessage = $"failed to update songs: {ex.Message}";
+            _errorMessage = $"failed to update song: {ex.Message}";
         }
     }
 
@@ -204,7 +204,7 @@
         }
         catch (Exception ex)
         {
-            _errorMessage = $"failed to delete songs: {ex.Message}";
+            _errorMessage = $"failed to delete song: {ex.Message}";
         }
     }
 
@@ -217,7 +217,7 @@
         }
         catch (Exception ex)
         {
-            _errorMessage = $"failed to laod ordered songs in specific album: {ex.Message}";
+            _errorMessage = $"failed to load ordered songs in specific album: {ex.Message}";
             _orderedSongsInSpecificAlbum = null;
         }
     }

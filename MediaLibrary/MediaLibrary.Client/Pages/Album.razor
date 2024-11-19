@@ -35,7 +35,7 @@
         <input type="number" class="form-control mb-2" placeholder="Artist ID" @bind="_newAlbum.ArtistId" />
         <h6 class="text-muted">Release year</h6>
         <input type="number" class="form-control mb-2" placeholder="Release Year" @bind="_newAlbum.ReleaseDate" />
-        <h6 class="text-muted">Sons ID</h6>
+        <h6 class="text-muted">Song IDs</h6>
         <input type="text" class="form-control mb-2" placeholder="e.g., 1,2,3" @bind="_songIdsInput" />
     </div>
 
@@ -66,7 +66,7 @@
         <input type="text" class="form-control mb-2" placeholder="Title" @bind="_existingAlbum.Title" />
         <input type="number" class="form-control mb-2" placeholder="Artist ID" @bind="_existingAlbum.ArtistId" />
         <input type="number" class="form-control mb-2" placeholder="Release Year" @bind="_existingAlbum.ReleaseDate" />
-        <h6 class="text-muted">Sons IDs</h6>
+        <h6 class="text-muted">Song IDs</h6>
         <input type="text" class="form-control mb-2" placeholder="e.g., 1,2,3" @bind="_songIdsInput" />
     </div>
 
@@ -104,14 +104,14 @@
         </ul>
     }
 
-    <h4 class="text-primary mt-4">Get Top 5 Albums By Duratiom</h4>
+    <h4 class="text-primary mt-4">Get Top 5 Albums By Duration</h4>
 
-    <button class="btn btn-primary mb-3" @onclick="LoadTop5AlbumsByDuratiom">Get Top 5 Albums By Duration</button>
+    <button class="btn btn-primary mb-3" @onclick="LoadTop5AlbumsByDuration">Get Top 5 Albums By Duration</button>
 
-    @if (_top5AlbumsByDuratiom != null && _top5AlbumsByDuratiom.Any())
+    @if (_top5AlbumsByDuration != null && _top5AlbumsByDuration.Any())
     {
         <ul class="list-unstyled">
-            @foreach (var album in _top5AlbumsByDuratiom)
+            @foreach (var album in _top5AlbumsByDuration)
             {
                 <li class="bg-light p-3 rounded mb-2 shadow-sm">
                     <strong>Id:</strong> @album.Id<br>
@@ -144,7 +144,7 @@
     private AlbumDto? _album;
     private AlbumDto _existingAlbum = new();
     private IEnumerable<AlbumInfoAndDurationDto>? _albumsInSpecifiedYear;
-    private IEnumerable<AlbumDto>? _top5AlbumsByDuratiom;
+    private IEnumerable<AlbumDto>? _top5AlbumsByDuration;
     private MinAvgMaxDurationDto? _durations;
     private string _songIdsInput = "";
     private string? _errorMessage;
@@ -248,17 +248,17 @@
         }
     }
 
-    private async Task LoadTop5AlbumsByDuratiom()
+    private async Task LoadTop5AlbumsByDuration()
     {
         try
         {
-            _top5AlbumsByDuratiom = await ApiClient.TopFiveByDurationAsync();
+            _top5AlbumsByDuration = await ApiClient.TopFiveByDurationAsync();
             _errorMessage = null;
         }
         catch (Exception ex)
         {
             _errorMessage = $"failed to load top 5 albums by duration: {ex.Message}";
-            _top5AlbumsByDuratiom = null;
+            _top5AlbumsByDuration = null;
         }
     }
 
